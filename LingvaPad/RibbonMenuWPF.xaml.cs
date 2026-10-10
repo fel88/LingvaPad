@@ -1,0 +1,152 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+
+namespace LingvaPad
+{
+    /// <summary>
+    /// Interaction logic for RibbonMenuWPF.xaml
+    /// </summary>
+    public partial class RibbonMenuWPF : System.Windows.Controls.UserControl
+    {
+        public RibbonMenuWPF()
+        {
+            InitializeComponent();
+            RibbonWin.Loaded += RibbonMenuWPF_Loaded;
+        }
+
+        private void RibbonMenuWPF_Loaded(object sender, RoutedEventArgs e)
+        {
+            Grid child = VisualTreeHelper.GetChild((DependencyObject)sender, 0) as Grid;
+            if (child != null)
+            {
+                child.RowDefinitions[0].Height = new GridLength(0);
+            }
+        }
+     
+        
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            //AboutBox1 ab = new AboutBox1();
+            //ab.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            //ab.ShowDialog();
+        }
+
+        
+
+        private void RibbonButton_Click(object sender, RoutedEventArgs e)
+        {
+            //if (AllItems.Count == 0)
+            //    return;
+            //DagreInputGraph dg = new DagreInputGraph();
+            //foreach (var item in AllItems)
+            //{
+            //    dg.AddNode(item, item.Rect.Width, item.Rect.Height);
+            //}
+            //foreach (var item in AllItems)
+            //{
+            //    foreach (var ch in item.Childs)
+            //    {
+            //        var nd1 = dg.GetNode(item);
+            //        var nd2 = dg.GetNode(ch);
+            //        dg.AddEdge(nd1, nd2);
+            //    }
+            //}
+
+
+            //dg.Layout();
+
+            //foreach (var item in dg.Nodes())
+            //{
+            //    var tag = (item.Tag as AItem);
+            //    tag.X = item.X;
+            //    tag.Y = -item.Y;
+            //}
+
+            //fitAll();
+        }
+
+        private void fitAll()
+        {
+
+        }
+
+        private void ImportImage_click(object sender, RoutedEventArgs e)
+        {
+            //Form.ImportImage();
+        }
+
+        private void SaveAsProject_Click(object sender, RoutedEventArgs e)
+        {
+           // Form.SaveAsProject();
+        }
+
+        private void OpenProject_click(object sender, RoutedEventArgs e)
+        {
+           // Form.OpenProject();
+        }
+
+        private void Delete_click(object sender, RoutedEventArgs e)
+        {
+           // Form.DeleteSelected();
+        }
+
+        private void Move_click(object sender, RoutedEventArgs e)
+        {
+           // Form.MoveSelected();
+        }
+
+        private void Rect_click(object sender, RoutedEventArgs e)
+        {
+           // Form.CreateRect();
+        }
+
+        private void Undo_click(object sender, RoutedEventArgs e)
+        {
+          //  Form.Undo();
+        }
+
+        private void Arrow_click(object sender, RoutedEventArgs e)
+        {
+           // Form.CreateArrow();
+        }
+
+        private void Clear_click(object sender, RoutedEventArgs e)
+        {
+            //Form.ClearProject();
+        }
+
+        private void Group_click(object sender, RoutedEventArgs e)
+        {
+           // Form.GroupSelected();
+        }
+
+        private void Ungroup_click(object sender, RoutedEventArgs e)
+        {
+           // Form.UnGroupSelected();
+
+        }
+
+        private void ShowHideLayersPanel_click(object sender, RoutedEventArgs e)
+        {
+            //Form.SwitchLayersPanelVisible();
+        }
+
+        private void Selection_click(object sender, RoutedEventArgs e)
+        {
+           // Form.ResetTool();
+        }
+
+        private void GroupSettings_click(object sender, RoutedEventArgs e)
+        {
+         //   Form.GroupSettings();
+        }
+
+        private void FitAll_click(object sender, RoutedEventArgs e)
+        {
+           // Form.FitAll();
+        }
+    }
+
+}

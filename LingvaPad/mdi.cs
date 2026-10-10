@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
+using System.Xml.Linq;
+
+namespace LingvaPad
+{
+    public partial class mdi : Form
+    {
+        public mdi()
+        {
+            InitializeComponent();
+
+
+        }
+
+        private void translationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TranslationsTrainer f = new TranslationsTrainer();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        private void tmplateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Xml files (*.xml)|*.xml";
+
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            var xml = Db.Instance.ToXml();
+            File.WriteAllText(sfd.FileName, xml.ToString());
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Xml files (*.xml)|*.xml";
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            var doc = XDocument.Load(ofd.FileName);
+            Db.Instance = new Db(doc.Root);
+        }
+    }
+}
