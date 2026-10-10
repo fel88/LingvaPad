@@ -85,26 +85,21 @@
             List<TextDiffBlock> ret = new List<TextDiffBlock>();
             var i = 0;
             var j = 0;
-            var text = "";
-            text += "<span style='text-align: center; font-size:24px; color:white;'>";
+            
             while (i < commonText.Length && j < originalText.Length)
             {
                 //for matching letters, add a span with the background color green for that letter
                 if (commonText[i] == originalText[j])
                 {
                     ret.Add(new TextDiffBlock() { Char = originalText[j], Correct = true });
-                    text =
-                      $"{text}<span style='background-color:green;'>{originalText[j]}</span>";
+                    
                     i++;
                     j++;
                 }
                 //for non-matching letters, add a span with the background color red for that letter
                 else
                 {
-                    ret.Add(new TextDiffBlock() { Char = originalText[j], Correct = false });
-
-                    text =
-                     $"{text}<span style='background-color:red;'>{originalText[j]}</span>";
+                    ret.Add(new TextDiffBlock() { Char = originalText[j], Correct = false });                    
                     j++;
                 }
             }
@@ -112,14 +107,11 @@
             //additional unmatched text in the original text
             while (j < originalText.Length)
             {
-                ret.Add(new TextDiffBlock() { Char = originalText[j], Correct = false });
-                text = $"{text}<span style='background-color:red;'>{originalText[j]}</span>";
+                ret.Add(new TextDiffBlock() { Char = originalText[j], Correct = false });                
                 j++;
             }
-            text += "</span>";
+            
             return ret.ToArray();
         }
-
-
     }
 }
