@@ -1,5 +1,8 @@
 ﻿namespace LingvaPad
 {
+    /*
+     * Code was taken from here: https://riddhinn99.github.io/text-diff/
+     */
     public static class TextDifferentiator
     {
         public class TextDiffBlock
