@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using System.Windows.Media.Animation;
 using System.Xml.Linq;
 
 namespace LingvaPad
@@ -31,7 +32,7 @@ namespace LingvaPad
 
         private void tmplateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -56,6 +57,18 @@ namespace LingvaPad
 
             var doc = XDocument.Load(ofd.FileName);
             Db.Instance = new Db(doc.Root);
+        }
+
+        private void translationsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Form1 form = new Form1();
+            form.MdiParent = this;
+            form.Show();
+        }
+
+        private void quizToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //simple 4 answer options test
         }
     }
 }

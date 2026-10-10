@@ -42,12 +42,20 @@
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
             tableLayoutPanel1 = new TableLayoutPanel();
+            listView2 = new ListView();
+            columnHeader3 = new ColumnHeader();
+            columnHeader4 = new ColumnHeader();
+            contextMenuStrip2 = new ContextMenuStrip(components);
+            addToolStripMenuItem1 = new ToolStripMenuItem();
+            removeToolStripMenuItem1 = new ToolStripMenuItem();
+            editToolStripMenuItem1 = new ToolStripMenuItem();
             splitContainer1 = new SplitContainer();
             textBox1 = new TextBox();
             textBox2 = new TextBox();
             contextMenuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
+            contextMenuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -61,7 +69,7 @@
             richTextBox1.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             richTextBox1.Location = new Point(0, 0);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(484, 169);
+            richTextBox1.Size = new Size(484, 83);
             richTextBox1.TabIndex = 0;
             richTextBox1.Text = "";
             // 
@@ -72,7 +80,7 @@
             richTextBox2.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             richTextBox2.Location = new Point(0, 0);
             richTextBox2.Name = "richTextBox2";
-            richTextBox2.Size = new Size(484, 243);
+            richTextBox2.Size = new Size(484, 118);
             richTextBox2.TabIndex = 1;
             richTextBox2.Text = "";
             // 
@@ -85,11 +93,19 @@
             listView1.GridLines = true;
             listView1.Location = new Point(3, 83);
             listView1.Name = "listView1";
-            listView1.Size = new Size(484, 416);
+            listView1.Size = new Size(484, 205);
             listView1.TabIndex = 2;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;
             listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Width = 250;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Width = 250;
             // 
             // contextMenuStrip1
             // 
@@ -119,6 +135,7 @@
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(114, 22);
             editToolStripMenuItem.Text = "edit";
+            editToolStripMenuItem.Click += editToolStripMenuItem_Click;
             // 
             // toolStrip1
             // 
@@ -144,6 +161,7 @@
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(listView2, 0, 2);
             tableLayoutPanel1.Controls.Add(listView1, 0, 1);
             tableLayoutPanel1.Controls.Add(splitContainer1, 1, 1);
             tableLayoutPanel1.Controls.Add(textBox1, 0, 0);
@@ -151,11 +169,61 @@
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 25);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Size = new Size(980, 502);
             tableLayoutPanel1.TabIndex = 4;
+            // 
+            // listView2
+            // 
+            listView2.Columns.AddRange(new ColumnHeader[] { columnHeader3, columnHeader4 });
+            listView2.ContextMenuStrip = contextMenuStrip2;
+            listView2.Dock = DockStyle.Fill;
+            listView2.FullRowSelect = true;
+            listView2.GridLines = true;
+            listView2.Location = new Point(3, 294);
+            listView2.Name = "listView2";
+            listView2.Size = new Size(484, 205);
+            listView2.TabIndex = 6;
+            listView2.UseCompatibleStateImageBehavior = false;
+            listView2.View = View.Details;
+            // 
+            // columnHeader3
+            // 
+            columnHeader3.Width = 250;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Width = 250;
+            // 
+            // contextMenuStrip2
+            // 
+            contextMenuStrip2.Items.AddRange(new ToolStripItem[] { addToolStripMenuItem1, removeToolStripMenuItem1, editToolStripMenuItem1 });
+            contextMenuStrip2.Name = "contextMenuStrip2";
+            contextMenuStrip2.Size = new Size(181, 92);
+            // 
+            // addToolStripMenuItem1
+            // 
+            addToolStripMenuItem1.Name = "addToolStripMenuItem1";
+            addToolStripMenuItem1.Size = new Size(180, 22);
+            addToolStripMenuItem1.Text = "add";
+            addToolStripMenuItem1.Click += addToolStripMenuItem1_Click;
+            // 
+            // removeToolStripMenuItem1
+            // 
+            removeToolStripMenuItem1.Name = "removeToolStripMenuItem1";
+            removeToolStripMenuItem1.Size = new Size(180, 22);
+            removeToolStripMenuItem1.Text = "remove";
+            removeToolStripMenuItem1.Click += removeToolStripMenuItem1_Click;
+            // 
+            // editToolStripMenuItem1
+            // 
+            editToolStripMenuItem1.Name = "editToolStripMenuItem1";
+            editToolStripMenuItem1.Size = new Size(180, 22);
+            editToolStripMenuItem1.Text = "edit";
+            editToolStripMenuItem1.Click += editToolStripMenuItem1_Click;
             // 
             // splitContainer1
             // 
@@ -171,8 +239,8 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(richTextBox2);
-            splitContainer1.Size = new Size(484, 416);
-            splitContainer1.SplitterDistance = 169;
+            splitContainer1.Size = new Size(484, 205);
+            splitContainer1.SplitterDistance = 83;
             splitContainer1.TabIndex = 3;
             // 
             // textBox1
@@ -206,6 +274,7 @@
             toolStrip1.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
+            contextMenuStrip2.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
@@ -231,5 +300,12 @@
         private ToolStripMenuItem addToolStripMenuItem;
         private ToolStripMenuItem removeToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;
+        private ListView listView2;
+        private ColumnHeader columnHeader3;
+        private ColumnHeader columnHeader4;
+        private ContextMenuStrip contextMenuStrip2;
+        private ToolStripMenuItem addToolStripMenuItem1;
+        private ToolStripMenuItem removeToolStripMenuItem1;
+        private ToolStripMenuItem editToolStripMenuItem1;
     }
 }

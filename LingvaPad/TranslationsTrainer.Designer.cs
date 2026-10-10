@@ -32,15 +32,16 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             richTextBox3 = new RichTextBox();
             panel1 = new Panel();
+            button3 = new Button();
             button2 = new Button();
             button1 = new Button();
             textBox1 = new TextBox();
-            pictureBox1 = new PictureBox();
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
+            toolStripButton2 = new ToolStripButton();
+            label1 = new Label();
             tableLayoutPanel1.SuspendLayout();
             panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -51,7 +52,6 @@
             tableLayoutPanel1.Controls.Add(richTextBox3, 0, 2);
             tableLayoutPanel1.Controls.Add(panel1, 0, 3);
             tableLayoutPanel1.Controls.Add(textBox1, 0, 0);
-            tableLayoutPanel1.Controls.Add(pictureBox1, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 25);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -60,14 +60,15 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
-            tableLayoutPanel1.Size = new Size(800, 425);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel1.Size = new Size(800, 519);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // richTextBox3
             // 
             richTextBox3.BorderStyle = BorderStyle.None;
             richTextBox3.Dock = DockStyle.Fill;
-            richTextBox3.Location = new Point(3, 237);
+            richTextBox3.Location = new Point(3, 331);
             richTextBox3.Name = "richTextBox3";
             richTextBox3.Size = new Size(794, 84);
             richTextBox3.TabIndex = 2;
@@ -75,16 +76,28 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(label1);
+            panel1.Controls.Add(button3);
             panel1.Controls.Add(button2);
             panel1.Controls.Add(button1);
-            panel1.Location = new Point(3, 327);
+            panel1.Location = new Point(3, 421);
             panel1.Name = "panel1";
-            panel1.Size = new Size(715, 95);
+            panel1.Size = new Size(794, 94);
             panel1.TabIndex = 3;
+            // 
+            // button3
+            // 
+            button3.Location = new Point(629, 3);
+            button3.Name = "button3";
+            button3.Size = new Size(165, 26);
+            button3.TabIndex = 2;
+            button3.Text = "+add as correct translation";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // button2
             // 
-            button2.Location = new Point(417, 24);
+            button2.Location = new Point(337, 42);
             button2.Name = "button2";
             button2.Size = new Size(96, 44);
             button2.TabIndex = 1;
@@ -94,7 +107,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(315, 42);
+            button1.Location = new Point(235, 42);
             button1.Name = "button1";
             button1.Size = new Size(96, 44);
             button1.TabIndex = 0;
@@ -111,22 +124,13 @@
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
-            textBox1.Size = new Size(794, 111);
+            textBox1.Size = new Size(794, 158);
             textBox1.TabIndex = 4;
             textBox1.TextAlign = HorizontalAlignment.Center;
             // 
-            // pictureBox1
-            // 
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Location = new Point(3, 120);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(794, 111);
-            pictureBox1.TabIndex = 5;
-            pictureBox1.TabStop = false;
-            // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton2 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -142,11 +146,29 @@
             toolStripButton1.Text = "run editor";
             toolStripButton1.Click += toolStripButton1_Click;
             // 
+            // toolStripButton2
+            // 
+            toolStripButton2.Image = (Image)resources.GetObject("toolStripButton2.Image");
+            toolStripButton2.ImageTransparentColor = Color.Magenta;
+            toolStripButton2.Name = "toolStripButton2";
+            toolStripButton2.Size = new Size(68, 22);
+            toolStripButton2.Text = "settings";
+            toolStripButton2.Click += toolStripButton2_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(174, 3);
+            label1.Name = "label1";
+            label1.Size = new Size(38, 15);
+            label1.TabIndex = 3;
+            label1.Text = "label1";
+            // 
             // TranslationsTrainer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 544);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(toolStrip1);
             Name = "TranslationsTrainer";
@@ -154,7 +176,7 @@
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            panel1.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             ResumeLayout(false);
@@ -171,6 +193,8 @@
         private Button button1;
         private Button button2;
         private TextBox textBox1;
-        private PictureBox pictureBox1;
+        private Button button3;
+        private ToolStripButton toolStripButton2;
+        private Label label1;
     }
 }

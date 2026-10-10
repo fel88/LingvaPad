@@ -1,4 +1,5 @@
 ﻿
+using System.Transactions;
 using System.Xml.Linq;
 
 namespace LingvaPad
@@ -6,13 +7,17 @@ namespace LingvaPad
     public class SentenceTranslation
     {
         public Sentence Sentence;
-        public Sentence Translation;
+        public List<Sentence> Translations = new List<Sentence>();//correct translations
         public Tag[] Tags;
 
         public SentenceTranslation() { }
         public SentenceTranslation(XElement item)
         {
-            Translation = new Sentence(item.Element("translation").Element("sentence"));
+            foreach (var titem in item.Element("translations").Elements())
+            {
+                Translations.Add(new Sentence(titem));
+            }
+            
             Sentence = new Sentence(item.Element("sentence").Element("sentence"));
         }
 
@@ -20,9 +25,14 @@ namespace LingvaPad
         {
             var ret = new XElement("translation");
             var s1 = new XElement("sentence");
-            var t1 = new XElement("translation");
+            var t1 = new XElement("translations");
+            
             s1.Add(Sentence.ToXml());
-            t1.Add(Translation.ToXml());
+            foreach (var item in Translations)
+            {
+                t1.Add(item.ToXml());
+            }
+            
             ret.Add(s1);
             ret.Add(t1);
 

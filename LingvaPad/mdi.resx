@@ -133,6 +133,18 @@
         NpNNZN7VyFXqIvO/dZOnYLF9DeJtQhJggjxCHiDbyN0A0PYF0gNu2gcI3LEAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="toolStripDropDownButton2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFPSURBVDhPzZKxasJQFIbj2FGFEuoiiODoYEB0EFQQ3BSs
+        k3HIEBcRRLCDDmKCjj5IKcUOhQ4dOhSku32DvsbffHcoOFjULr3wce7NOd9/Q4j1L9ZtLBa7vwRcK9o8
+        bDYbdTodrdfrk2AWB5eAxzAMNZ/PNZlMToJZHFwCnhaLhQqFwlFSqZQSicQPyWRSOLgEPM9mM5VKJS2X
+        S7mua2qj0TBks1nZtq3RaGR6VM44uAS8TKdTVatV7XY7xeNxU33fN2QyGaXT6YMeZxxcAl7H47Gazaa2
+        2632+72pq9XKwFvkcjkFQWB6VM44uAS8DYdDtdvtoxSLReXz+QNwcAl4HwwG6vV6Z4GDS8CH53lqtVrm
+        pnK5rEqlolqtpnq9buD78IweM8zi4PInfvb7fTmOo263K/a/wQyz7HEJuIv4uhBc6yriOuLmTHBw/7Is
+        6xvHYE6sDndTOwAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="saveToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAABl0RVh0U29m
@@ -144,18 +156,6 @@
         KJfLUbFYJP4HXQSMIEQUFORH2Gsikbjmo4XAHQLG5XLZlwNJIgFhcz44DHCAgCneAjmQNJk8+0QJY/gm
         UNx0EIBFSFJVlfr9QaQwBESFnDFuKpX6gCR8erd7Hy1MkhQcBEtjLpkFJImgJzBkVEYoSfoGmEjY6nEc
         xYMAAAAASUVORK5CYII=
-</value>
-  </data>
-  <data name="toolStripDropDownButton2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFPSURBVDhPzZKxasJQFIbj2FGFEuoiiODoYEB0EFQQ3BSs
-        k3HIEBcRRLCDDmKCjj5IKcUOhQ4dOhSku32DvsbffHcoOFjULr3wce7NOd9/Q4j1L9ZtLBa7vwRcK9o8
-        bDYbdTodrdfrk2AWB5eAxzAMNZ/PNZlMToJZHFwCnhaLhQqFwlFSqZQSicQPyWRSOLgEPM9mM5VKJS2X
-        S7mua2qj0TBks1nZtq3RaGR6VM44uAS8TKdTVatV7XY7xeNxU33fN2QyGaXT6YMeZxxcAl7H47Gazaa2
-        2632+72pq9XKwFvkcjkFQWB6VM44uAS8DYdDtdvtoxSLReXz+QNwcAl4HwwG6vV6Z4GDS8CH53lqtVrm
-        pnK5rEqlolqtpnq9buD78IweM8zi4PInfvb7fTmOo263K/a/wQyz7HEJuIv4uhBc6yriOuLmTHBw/7Is
-        6xvHYE6sDndTOwAAAABJRU5ErkJggg==
 </value>
   </data>
 </root>
