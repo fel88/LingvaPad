@@ -1,5 +1,6 @@
 # LingvaPad
 
+<img width="989" height="771" alt="image" src="https://github.com/user-attachments/assets/bea8dcc9-fb30-4c3c-8ee3-139a164e230d" />
 
 
 ### Icons:
