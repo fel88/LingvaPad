@@ -40,7 +40,7 @@ namespace LingvaPad
                     continue;
 
                 ret.Add(item);
-                
+
             }
             return ret.ToArray();
         }
@@ -134,6 +134,17 @@ namespace LingvaPad
             t.Init(GetFilteredList());
             t.MdiParent = MdiParent;
             t.Show();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            {
+                if (listView1.SelectedItems.Count == 0)
+                    return;
+
+                var trans = listView1.SelectedItems[0].Tag as Sentence;
+                Clipboard.SetText(trans.Text);
+            }
         }
     }
 }

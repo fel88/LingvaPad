@@ -63,6 +63,16 @@ namespace LingvaPad.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap briefcase {
+            get {
+                object obj = ResourceManager.GetObject("briefcase", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap chart {
             get {
                 object obj = ResourceManager.GetObject("chart", resourceCulture);
@@ -96,6 +106,16 @@ namespace LingvaPad.Properties {
         public static System.Drawing.Bitmap disks {
             get {
                 object obj = ResourceManager.GetObject("disks", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap document_copy {
+            get {
+                object obj = ResourceManager.GetObject("document-copy", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

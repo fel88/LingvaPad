@@ -43,9 +43,10 @@
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
             toolStripDropDownButton1 = new ToolStripDropDownButton();
+            readAloudToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1 = new TableLayoutPanel();
             textBox1 = new TextBox();
-            readAloudToolStripMenuItem = new ToolStripMenuItem();
+            copyToolStripMenuItem = new ToolStripMenuItem();
             contextMenuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -97,15 +98,15 @@
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { addToolStripMenuItem, removeToolStripMenuItem, editToolStripMenuItem });
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { addToolStripMenuItem, removeToolStripMenuItem, editToolStripMenuItem, copyToolStripMenuItem });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(115, 70);
+            contextMenuStrip1.Size = new Size(181, 114);
             // 
             // addToolStripMenuItem
             // 
             addToolStripMenuItem.Image = Properties.Resources.plus;
             addToolStripMenuItem.Name = "addToolStripMenuItem";
-            addToolStripMenuItem.Size = new Size(114, 22);
+            addToolStripMenuItem.Size = new Size(180, 22);
             addToolStripMenuItem.Text = "add";
             addToolStripMenuItem.Click += addToolStripMenuItem_Click;
             // 
@@ -113,7 +114,7 @@
             // 
             removeToolStripMenuItem.Image = Properties.Resources.cross;
             removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            removeToolStripMenuItem.Size = new Size(114, 22);
+            removeToolStripMenuItem.Size = new Size(180, 22);
             removeToolStripMenuItem.Text = "remove";
             removeToolStripMenuItem.Click += removeToolStripMenuItem_Click;
             // 
@@ -121,7 +122,7 @@
             // 
             editToolStripMenuItem.Image = Properties.Resources.pencil;
             editToolStripMenuItem.Name = "editToolStripMenuItem";
-            editToolStripMenuItem.Size = new Size(114, 22);
+            editToolStripMenuItem.Size = new Size(180, 22);
             editToolStripMenuItem.Text = "edit";
             editToolStripMenuItem.Click += editToolStripMenuItem_Click;
             // 
@@ -153,6 +154,13 @@
             toolStripDropDownButton1.Size = new Size(75, 22);
             toolStripDropDownButton1.Text = "trainers";
             // 
+            // readAloudToolStripMenuItem
+            // 
+            readAloudToolStripMenuItem.Name = "readAloudToolStripMenuItem";
+            readAloudToolStripMenuItem.Size = new Size(130, 22);
+            readAloudToolStripMenuItem.Text = "read aloud";
+            readAloudToolStripMenuItem.Click += readAloudToolStripMenuItem_Click;
+            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 1;
@@ -178,12 +186,13 @@
             textBox1.TabIndex = 4;
             textBox1.TextChanged += textBox1_TextChanged;
             // 
-            // readAloudToolStripMenuItem
+            // copyToolStripMenuItem
             // 
-            readAloudToolStripMenuItem.Name = "readAloudToolStripMenuItem";
-            readAloudToolStripMenuItem.Size = new Size(180, 22);
-            readAloudToolStripMenuItem.Text = "read aloud";
-            readAloudToolStripMenuItem.Click += readAloudToolStripMenuItem_Click;
+            copyToolStripMenuItem.Image = Properties.Resources.document_copy;
+            copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            copyToolStripMenuItem.Size = new Size(180, 22);
+            copyToolStripMenuItem.Text = "Copy";
+            copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
             // 
             // SentencesEditor
             // 
@@ -222,5 +231,6 @@
         private ColumnHeader columnHeader4;
         private ToolStripDropDownButton toolStripDropDownButton1;
         private ToolStripMenuItem readAloudToolStripMenuItem;
+        private ToolStripMenuItem copyToolStripMenuItem;
     }
 }

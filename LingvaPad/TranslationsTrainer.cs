@@ -20,21 +20,12 @@ namespace LingvaPad
         public TranslationsTrainer()
         {
             InitializeComponent();
-            questionIdx = r.Next(Db.Instance.Translations.Count);
 
-            textBox1.Text = Question.Sentence.Text;
-
-
-            richTextBox3.Font = textBox1.Font;
-
-            wb = new WebBrowser();
-
-            tableLayoutPanel1.Controls.Add(wb, 0, 1);
-            wb.Dock = DockStyle.Fill;
         }
 
         WebBrowser wb;
-        SentenceTranslation Question => Db.Instance.Translations[questionIdx];
+        Sentence[] FilteredSentences;
+        Sentence Question => FilteredSentences[questionIdx];
         int questionIdx = 0;
         bool showAnswer = false;
 
@@ -46,13 +37,14 @@ namespace LingvaPad
             f.Show();
         }
         Random r = new Random();
+
+
         private void button1_Click(object sender, EventArgs e)
         {
-
-            textBox1.Text = Question.Sentence.Text;
+            textBox1.Text = Question.Text;
             showAnswer = true;
 
-            var lcs = Question.Translations.Select(z => TextDifferentiator.FindDifference(richTextBox3.Text, z.Text)).OrderBy(z => z.Count(u => !u.Correct)).ToArray();
+            var lcs = Db.Instance.TranslationsLookUp[Question].Select(z => TextDifferentiator.FindDifference(richTextBox3.Text.ToLower(), z.Text.ToLower())).OrderBy(z => z.Count(u => !u.Correct)).ToArray();
             //find closest answer and make a decision about corectness according current checking policy
             var ret = lcs.First();
             label1.Font = new System.Drawing.Font("Consolas", 18);
@@ -100,19 +92,36 @@ namespace LingvaPad
         {
             showAnswer = false;
             wb.DocumentText = "";
-            questionIdx = r.Next(Db.Instance.Translations.Count);
-            textBox1.Text = Question.Sentence.Text;
+            questionIdx = r.Next(FilteredSentences.Length);
+            textBox1.Text = Question.Text;
             richTextBox3.Text = "";
             label1.Visible = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Question.Translations.Add(new Sentence() { Text = richTextBox3.Text });
+            //Question.Translations.Add(new Sentence() { Text = richTextBox3.Text });
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
+
+        }
+
+        internal void Init(string v1, string v2)
+        {
+            FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == v1).ToArray();            
+            questionIdx = r.Next(FilteredSentences.Length);
+
+            textBox1.Text = Question.Text;
+
+
+            richTextBox3.Font = textBox1.Font;
+
+            wb = new WebBrowser();
+
+            tableLayoutPanel1.Controls.Add(wb, 0, 1);
+            wb.Dock = DockStyle.Fill;
 
         }
     }

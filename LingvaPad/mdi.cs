@@ -26,6 +26,17 @@ namespace LingvaPad
         private void translationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TranslationsTrainer f = new TranslationsTrainer();
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            d.AddOptionsField("mode", "Mode", ["ru->eng", "eng->ru"], 0);
+            if (!d.ShowDialog())
+                return;
+
+            var modeIdx = d.GetOptionsFieldIdx("mode");
+            if (modeIdx == 0)
+                f.Init("ru", "en");
+            else
+                f.Init("en", "ru");
+
             f.MdiParent = this;
             f.Show();
         }
@@ -89,6 +100,26 @@ namespace LingvaPad
         private void fillBlankToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void translateAloudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Trainer1 t = new Trainer1();
+            t.Init(Db.Instance.Sentences.Where(z => z.Culture == "ru").ToArray());
+            t.MdiParent = this;
+            t.Show();
+        }
+
+        private void flashcardsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FlashcardsEditor f = new FlashcardsEditor();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        private void flashcardsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            //flashcards trainer
         }
     }
 }

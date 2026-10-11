@@ -1,0 +1,86 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace LingvaPad
+{
+    public partial class FlashcardsEditor : Form
+    {
+        public FlashcardsEditor()
+        {
+            InitializeComponent();
+            UpdateList();
+        }
+
+        public void UpdateList()
+        {
+            listView1.Items.Clear();
+            foreach (var item in Db.Instance.Flashcards)
+            {
+                listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Description }) { Tag = item });
+            }
+        }
+
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var nextId = 1;
+            if (Db.Instance.Flashcards.Any())
+            {
+                nextId = Db.Instance.Flashcards.Max(z => z.Id) + 1;
+            }
+
+
+            Db.Instance.Flashcards.Add(new Flashcard() { Id = nextId, Image = Clipboard.GetImage() as Bitmap });
+            UpdateList();
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            var fc = listView1.SelectedItems[0].Tag as Flashcard;
+            pictureBox1.Image = fc.Image;
+        }
+
+        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+
+            var fc = listView1.SelectedItems[0].Tag as Flashcard;
+
+            if (!GuiHelpers.ShowQuestion("Are you sure to delete?"))
+                return;
+
+            Db.Instance.Flashcards.Remove(fc);
+            UpdateList();
+        }
+
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+
+            var fc = listView1.SelectedItems[0].Tag as Flashcard;
+
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            d.AddStringField("desc", "Desc", fc.Description);
+
+            if (!d.ShowDialog())
+                return;
+
+            fc.Description = d.GetStringField("desc");
+            UpdateList();
+        }
+    }
+}

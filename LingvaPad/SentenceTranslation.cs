@@ -7,35 +7,24 @@ namespace LingvaPad
     public class SentenceTranslation
     {
         public Sentence Sentence;
-        public List<Sentence> Translations = new List<Sentence>();//correct translations
-        public Tag[] Tags;
+        public Sentence Translation;        
 
         public SentenceTranslation() { }
         public SentenceTranslation(XElement item, XmlSerializeDataContext dataContext)
         {
-            foreach (var titem in item.Element("translations").Elements())
-            {
-                Translations.Add(new Sentence(titem, dataContext));
-            }
+            var sourceId = int.Parse(item.Attribute("sourceId").Value);
+            var translationId = int.Parse(item.Attribute("translationId").Value);            
 
-            Sentence = new Sentence(item.Element("sentence").Element("sentence"), dataContext);
+            Sentence = dataContext.Current.Sentences.First(z => z.Id == sourceId);
+            Translation = dataContext.Current.Sentences.First(z => z.Id == translationId);
         }
 
         internal XElement ToXml(XmlSerializeDataContext dataContext)
         {
             var ret = new XElement("translation");
-            var s1 = new XElement("sentence");
-            var t1 = new XElement("translations");
-
-            s1.Add(Sentence.ToXml(dataContext));
-            foreach (var item in Translations)
-            {
-                t1.Add(item.ToXml(dataContext));
-            }
-
-            ret.Add(s1);
-            ret.Add(t1);
-
+            ret.Add(new XAttribute("sourceId", Sentence.Id));
+            ret.Add(new XAttribute("translationId", Translation.Id));
+            
             return ret;
         }
     }
