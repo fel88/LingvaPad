@@ -129,10 +129,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="SentencesEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Trainer1.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
 

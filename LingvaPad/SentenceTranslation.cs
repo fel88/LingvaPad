@@ -11,28 +11,28 @@ namespace LingvaPad
         public Tag[] Tags;
 
         public SentenceTranslation() { }
-        public SentenceTranslation(XElement item)
+        public SentenceTranslation(XElement item, XmlSerializeDataContext dataContext)
         {
             foreach (var titem in item.Element("translations").Elements())
             {
-                Translations.Add(new Sentence(titem));
+                Translations.Add(new Sentence(titem, dataContext));
             }
-            
-            Sentence = new Sentence(item.Element("sentence").Element("sentence"));
+
+            Sentence = new Sentence(item.Element("sentence").Element("sentence"), dataContext);
         }
 
-        internal XElement ToXml()
+        internal XElement ToXml(XmlSerializeDataContext dataContext)
         {
             var ret = new XElement("translation");
             var s1 = new XElement("sentence");
             var t1 = new XElement("translations");
-            
-            s1.Add(Sentence.ToXml());
+
+            s1.Add(Sentence.ToXml(dataContext));
             foreach (var item in Translations)
             {
-                t1.Add(item.ToXml());
+                t1.Add(item.ToXml(dataContext));
             }
-            
+
             ret.Add(s1);
             ret.Add(t1);
 

@@ -70,5 +70,25 @@ namespace LingvaPad
         {
             //simple 4 answer options test
         }
+
+        private void simpleRepeatAloudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Trainer1 t = new Trainer1();
+            t.Init(Db.Instance.Sentences);
+            t.MdiParent = this;
+            t.Show();
+        }
+
+        private void sentencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SentencesEditor form = new SentencesEditor();
+            form.MdiParent = this;
+            form.Show();
+        }
+
+        private void fillBlankToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
