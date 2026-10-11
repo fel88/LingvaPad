@@ -23,6 +23,16 @@ namespace LingvaPad
 
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter)
+            {
+                Check();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         WebBrowser wb;
         Sentence[] FilteredSentences;
         SentencePair[] FilteredPairs;
@@ -42,10 +52,14 @@ namespace LingvaPad
 
         private void button1_Click(object sender, EventArgs e)
         {
+            Check();
+        }
+        public void Check()
+        {
             textBox1.Text = Question.Text;
             showAnswer = true;
 
-            var lcs = Db.Instance.TranslationsLookUp[Question].Select(z => TextDifferentiator.FindDifference(richTextBox3.Text.ToLower(), z.Text.ToLower())).OrderBy(z => z.Count(u => !u.Correct)).ToArray();
+            var lcs = Db.Instance.TranslationsLookUp[Question].Select(z => TextDifferentiator.FindDifference(richTextBox3.Text, z.Text)).OrderBy(z => z.Count(u => !u.Correct)).ToArray();
             //find closest answer and make a decision about corectness according current checking policy
             var ret = lcs.First();
             label1.Font = new System.Drawing.Font("Consolas", 18);
@@ -65,8 +79,10 @@ namespace LingvaPad
             StringBuilder html = new StringBuilder();
             html.Append("<span style='text-align: center; font-size:24px; color:white;'>");
 
-            foreach (var item in ret)
+            for (int i = 0; i < ret.Length; i++)
             {
+                TextDifferentiator.TextDiffBlock? item = ret[i];
+
                 if (item.Correct)
                 {
                     html.Append($"<span style='background-color:green;'>{item.Char}</span>");
@@ -111,7 +127,7 @@ namespace LingvaPad
         internal void InitByTag(string tag)
         {
             FilteredPairs = Db.Instance.Pairs.Where(z => z.Tags.Any(u => u.Name == tag)).ToArray();
-            FilteredSentences = FilteredPairs.Select(z=>z.Source).Distinct().ToArray();
+            FilteredSentences = FilteredPairs.Select(z => z.Source).Distinct().ToArray();
             questionIdx = r.Next(FilteredSentences.Length);
 
             textBox1.Text = Question.Text;

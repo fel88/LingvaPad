@@ -85,7 +85,7 @@ namespace LingvaPad
         private void simpleRepeatAloudToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Trainer1 t = new Trainer1();
-            t.Init(Db.Instance.Sentences);
+            t.Init(Db.Instance.Sentences.Where(z=>z.Culture=="en").ToArray());
             t.MdiParent = this;
             t.Show();
         }
