@@ -35,6 +35,7 @@
             listView1 = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
+            columnHeader5 = new ColumnHeader();
             contextMenuStrip1 = new ContextMenuStrip(components);
             addToolStripMenuItem = new ToolStripMenuItem();
             removeToolStripMenuItem = new ToolStripMenuItem();
@@ -51,7 +52,6 @@
             editToolStripMenuItem1 = new ToolStripMenuItem();
             splitContainer1 = new SplitContainer();
             textBox1 = new TextBox();
-            textBox2 = new TextBox();
             contextMenuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -69,7 +69,7 @@
             richTextBox1.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             richTextBox1.Location = new Point(0, 0);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(484, 83);
+            richTextBox1.Size = new Size(484, 93);
             richTextBox1.TabIndex = 0;
             richTextBox1.Text = "";
             // 
@@ -80,20 +80,21 @@
             richTextBox2.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             richTextBox2.Location = new Point(0, 0);
             richTextBox2.Name = "richTextBox2";
-            richTextBox2.Size = new Size(484, 118);
+            richTextBox2.Size = new Size(484, 133);
             richTextBox2.TabIndex = 1;
             richTextBox2.Text = "";
             // 
             // listView1
             // 
-            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2 });
+            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader5 });
+            tableLayoutPanel1.SetColumnSpan(listView1, 2);
             listView1.ContextMenuStrip = contextMenuStrip1;
             listView1.Dock = DockStyle.Fill;
             listView1.FullRowSelect = true;
             listView1.GridLines = true;
-            listView1.Location = new Point(3, 83);
+            listView1.Location = new Point(3, 33);
             listView1.Name = "listView1";
-            listView1.Size = new Size(484, 205);
+            listView1.Size = new Size(974, 230);
             listView1.TabIndex = 2;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;
@@ -106,6 +107,11 @@
             // columnHeader2
             // 
             columnHeader2.Width = 250;
+            // 
+            // columnHeader5
+            // 
+            columnHeader5.Text = "Tags";
+            columnHeader5.Width = 300;
             // 
             // contextMenuStrip1
             // 
@@ -163,14 +169,13 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(listView2, 0, 2);
             tableLayoutPanel1.Controls.Add(listView1, 0, 1);
-            tableLayoutPanel1.Controls.Add(splitContainer1, 1, 1);
+            tableLayoutPanel1.Controls.Add(splitContainer1, 1, 2);
             tableLayoutPanel1.Controls.Add(textBox1, 0, 0);
-            tableLayoutPanel1.Controls.Add(textBox2, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 25);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Size = new Size(980, 502);
@@ -183,9 +188,9 @@
             listView2.Dock = DockStyle.Fill;
             listView2.FullRowSelect = true;
             listView2.GridLines = true;
-            listView2.Location = new Point(3, 294);
+            listView2.Location = new Point(3, 269);
             listView2.Name = "listView2";
-            listView2.Size = new Size(484, 205);
+            listView2.Size = new Size(484, 230);
             listView2.TabIndex = 6;
             listView2.UseCompatibleStateImageBehavior = false;
             listView2.View = View.Details;
@@ -202,33 +207,33 @@
             // 
             contextMenuStrip2.Items.AddRange(new ToolStripItem[] { addToolStripMenuItem1, removeToolStripMenuItem1, editToolStripMenuItem1 });
             contextMenuStrip2.Name = "contextMenuStrip2";
-            contextMenuStrip2.Size = new Size(181, 92);
+            contextMenuStrip2.Size = new Size(115, 70);
             // 
             // addToolStripMenuItem1
             // 
             addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            addToolStripMenuItem1.Size = new Size(180, 22);
+            addToolStripMenuItem1.Size = new Size(114, 22);
             addToolStripMenuItem1.Text = "add";
             addToolStripMenuItem1.Click += addToolStripMenuItem1_Click;
             // 
             // removeToolStripMenuItem1
             // 
             removeToolStripMenuItem1.Name = "removeToolStripMenuItem1";
-            removeToolStripMenuItem1.Size = new Size(180, 22);
+            removeToolStripMenuItem1.Size = new Size(114, 22);
             removeToolStripMenuItem1.Text = "remove";
             removeToolStripMenuItem1.Click += removeToolStripMenuItem1_Click;
             // 
             // editToolStripMenuItem1
             // 
             editToolStripMenuItem1.Name = "editToolStripMenuItem1";
-            editToolStripMenuItem1.Size = new Size(180, 22);
+            editToolStripMenuItem1.Size = new Size(114, 22);
             editToolStripMenuItem1.Text = "edit";
             editToolStripMenuItem1.Click += editToolStripMenuItem1_Click;
             // 
             // splitContainer1
             // 
             splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(493, 83);
+            splitContainer1.Location = new Point(493, 269);
             splitContainer1.Name = "splitContainer1";
             splitContainer1.Orientation = Orientation.Horizontal;
             // 
@@ -239,25 +244,19 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(richTextBox2);
-            splitContainer1.Size = new Size(484, 205);
-            splitContainer1.SplitterDistance = 83;
+            splitContainer1.Size = new Size(484, 230);
+            splitContainer1.SplitterDistance = 93;
             splitContainer1.TabIndex = 3;
             // 
             // textBox1
             // 
+            tableLayoutPanel1.SetColumnSpan(textBox1, 2);
+            textBox1.Dock = DockStyle.Fill;
             textBox1.Location = new Point(3, 3);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(346, 23);
+            textBox1.Size = new Size(974, 23);
             textBox1.TabIndex = 4;
             textBox1.TextChanged += textBox1_TextChanged;
-            // 
-            // textBox2
-            // 
-            textBox2.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            textBox2.Location = new Point(493, 3);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(462, 39);
-            textBox2.TabIndex = 5;
             // 
             // Form1
             // 
@@ -268,7 +267,7 @@
             Controls.Add(toolStrip1);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "LingvaPad";
+            Text = "LingvaPad: pairs editor";
             contextMenuStrip1.ResumeLayout(false);
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
@@ -295,7 +294,6 @@
         private TableLayoutPanel tableLayoutPanel1;
         private SplitContainer splitContainer1;
         private TextBox textBox1;
-        private TextBox textBox2;
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem addToolStripMenuItem;
         private ToolStripMenuItem removeToolStripMenuItem;
@@ -307,5 +305,6 @@
         private ToolStripMenuItem addToolStripMenuItem1;
         private ToolStripMenuItem removeToolStripMenuItem1;
         private ToolStripMenuItem editToolStripMenuItem1;
+        private ColumnHeader columnHeader5;
     }
 }

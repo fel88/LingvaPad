@@ -33,9 +33,9 @@ namespace LingvaPad
 
             var modeIdx = d.GetOptionsFieldIdx("mode");
             if (modeIdx == 0)
-                f.Init("ru", "en");
+                f.InitByCulture("ru", "en");
             else
-                f.Init("en", "ru");
+                f.InitByCulture("en", "ru");
 
             f.MdiParent = this;
             f.Show();
@@ -120,6 +120,22 @@ namespace LingvaPad
         private void flashcardsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             //flashcards trainer
+        }
+
+        private void customPairsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TranslationsTrainer f = new TranslationsTrainer();
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            var allTags = Db.Instance.Pairs.SelectMany(z => z.Tags).GroupBy(z => z.Name).Select(z => z.Key).ToArray();
+            d.AddOptionsField("filter", "Filter", allTags.ToArray(), 0);
+            if (!d.ShowDialog())
+                return;
+
+            var filter = d.GetOptionsField("filter");
+            f.InitByTag(filter);
+
+            f.MdiParent = this;
+            f.Show();
         }
     }
 }

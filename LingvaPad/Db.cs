@@ -8,7 +8,7 @@ namespace LingvaPad
     public class Db
     {
         public static Db Instance = new Db();
-        public List<SentenceTranslation> Translations = new List<SentenceTranslation>();
+        public List<SentencePair> Pairs = new List<SentencePair>();
         public List<Sentence> Sentences = new List<Sentence>();
         public List<Flashcard> Flashcards = new List<Flashcard>();
 
@@ -17,7 +17,7 @@ namespace LingvaPad
         public Db(XElement? root)
         {
             XmlSerializeDataContext dataContext = new XmlSerializeDataContext();
-            var translations = root.Element("translations");
+            var pairs = root.Element("pairs");
             var sentences = root.Element("sentences");
             var flashcards = root.Element("flashcards");
             dataContext.Current = this;
@@ -26,9 +26,9 @@ namespace LingvaPad
                 Sentences.Add(new Sentence(item, dataContext));
             }
 
-            foreach (var item in translations?.Elements("translation"))
+            foreach (var item in pairs.Elements())
             {
-                Translations.Add(new SentenceTranslation(item, dataContext));
+                Pairs.Add(new SentencePair(item, dataContext));
             }
 
             if (flashcards != null)
@@ -43,13 +43,13 @@ namespace LingvaPad
         {
             foreach (var item in Sentences)
             {
-                var tt = Translations.Where(z => z.Sentence == item).ToArray();
-                TranslationsLookUp.Add(item, tt.Select(z => z.Translation).ToList());
+                var tt = Pairs.Where(z => z.Source == item).ToArray();
+                TranslationsLookUp.Add(item, tt.Select(z => z.Target).ToList());
             }
             foreach (var item in Sentences)
             {
-                var tt = Translations.Where(z => z.Translation == item).ToArray();
-                TranslationsLookUp[item].AddRange(tt.Select(z => z.Sentence).ToList());
+                var tt = Pairs.Where(z => z.Target == item).ToArray();
+                TranslationsLookUp[item].AddRange(tt.Select(z => z.Source).ToList());
             }
         }
 
@@ -57,10 +57,10 @@ namespace LingvaPad
         {
             XElement ret = new XElement("root");
             XElement sentences = new XElement("sentences");
-            XElement trans = new XElement("translations");
+            XElement pairs = new XElement("pairs");
             XElement flashcards = new XElement("flashcards");
             ret.Add(sentences);
-            ret.Add(trans);
+            ret.Add(pairs);
             ret.Add(flashcards);
             XmlSerializeDataContext dataContext = new XmlSerializeDataContext();
             for (int i = 0; i < Sentences.Count; i++)
@@ -73,9 +73,9 @@ namespace LingvaPad
             {
                 sentences.Add(tr.ToXml(dataContext));
             }
-            foreach (var tr in Translations)
+            foreach (var tr in Pairs)
             {
-                trans.Add(tr.ToXml(dataContext));
+                pairs.Add(tr.ToXml(dataContext));
             }
             foreach (var item in Flashcards)
             {

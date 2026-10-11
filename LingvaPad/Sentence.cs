@@ -19,7 +19,7 @@ namespace LingvaPad
             List<Tag> tags = new List<Tag>();
             if (xElement.Element("tags") != null)
                 foreach (var item in xElement.Element("tags").Elements())
-                    tags.Add(new Tag(item.Value));
+                    tags.Add(new Tag(item.Value.Trim()));
 
             Tags = tags.ToArray();
         }

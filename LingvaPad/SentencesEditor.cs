@@ -17,7 +17,7 @@ namespace LingvaPad
             var filterLow = filter.ToLower();
             foreach (var item in Db.Instance.Sentences)
             {
-                var tagsStr = item.Tags == null ? "" : string.Join(',', item.Tags.Select(z => z.Name));
+                var tagsStr = item.Tags == null ? "" : string.Join(", ", item.Tags.Select(z => z.Name));
                 string[] stringsToSearch = [item.Text.ToLower(), tagsStr];
                 if (!string.IsNullOrEmpty(filter) && !stringsToSearch.Any(z => z.Contains(filterLow)))
                     continue;
@@ -34,7 +34,7 @@ namespace LingvaPad
             List<Sentence> ret = new List<Sentence>();
             foreach (var item in Db.Instance.Sentences)
             {
-                var tagsStr = item.Tags == null ? "" : string.Join(',', item.Tags.Select(z => z.Name));
+                var tagsStr = item.Tags == null ? "" : string.Join(", ", item.Tags.Select(z => z.Name));
                 string[] stringsToSearch = [item.Text.ToLower(), tagsStr];
                 if (!string.IsNullOrEmpty(filter) && !stringsToSearch.Any(z => z.Contains(filterLow)))
                     continue;
@@ -99,10 +99,10 @@ namespace LingvaPad
             if (listView1.SelectedItems.Count == 0)
                 return;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
-            if (GuiHelpers.ShowQuestion($"Are you sure to delete  {trans.Sentence.Text}?"))
+            var trans = listView1.SelectedItems[0].Tag as Sentence;
+            if (GuiHelpers.ShowQuestion($"Are you sure to delete  {trans.Text}?"))
             {
-                Db.Instance.Translations.Remove(trans);
+                Db.Instance.Sentences.Remove(trans);
                 UpdateList();
             }
         }
@@ -115,13 +115,13 @@ namespace LingvaPad
             var trans = listView1.SelectedItems[0].Tag as Sentence;
             var d = AutoDialog.DialogHelpers.StartDialog();
             d.AddStringField("text", "Text", trans.Text);
-            d.AddStringField("tags", "Tags", trans.Tags == null ? "" : string.Join(',', trans.Tags.Select(z => z.Name)));
+            d.AddStringField("tags", "Tags", trans.Tags == null ? "" : string.Join(", ", trans.Tags.Select(z => z.Name)));
 
             if (!d.ShowDialog())
                 return;
 
             var text = d.GetStringField("text");
-            var tagsStr = d.GetStringField("tags").Split(",", StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var tagsStr = d.GetStringField("tags").Split(",", StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()).ToArray();
             trans.Tags = tagsStr.Select(z => new Tag() { Name = z }).ToArray();
             trans.Text = text;
 

@@ -14,18 +14,26 @@ namespace LingvaPad
         private void UpdateList()
         {
             listView1.Items.Clear();
-            foreach (var item in Db.Instance.Translations)
+            var filterLow = filter.ToLower();
+            foreach (var item in Db.Instance.Pairs)
             {
+                var tagsStr = item.Tags == null ? "" : string.Join(", ", item.Tags.Select(z => z.Name));
+                string[] stringsToSearch = [item.Source.Text, item.Target.Text, tagsStr];
+                if (!string.IsNullOrEmpty(filter) && !stringsToSearch.Any(z => z.ToLower().Contains(filterLow)))
+                    continue;
+
                 listView1.Items.Add(new ListViewItem(new string[] {
-                    item.Sentence.Text, item.Translation.Text })
+                    item.Source.Text, item.Target.Text,tagsStr })
                 { Tag = item });
             }
         }
 
 
+        string filter = "";
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
+            filter = textBox1.Text;
+            UpdateList();
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
@@ -38,9 +46,9 @@ namespace LingvaPad
             if (listView1.SelectedItems.Count == 0)
                 return;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
-            richTextBox1.Text = trans.Sentence.Text;
-            richTextBox2.Text = trans.Translation.Text;
+            var trans = listView1.SelectedItems[0].Tag as SentencePair;
+            richTextBox1.Text = trans.Source.Text;
+            richTextBox2.Text = trans.Target.Text;
 
             UpdateList2();
 
@@ -52,12 +60,12 @@ namespace LingvaPad
             if (listView1.SelectedItems.Count == 0)
                 return;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
+            var trans = listView1.SelectedItems[0].Tag as SentencePair;
 
             //foreach (var item in trans.Translations)
             {
                 // listView2.Items.Add(new ListViewItem(new string[] { item.Text }) { Tag = item });
-                listView2.Items.Add(new ListViewItem(new string[] { trans.Translation.Text }) { Tag = trans.Translation });
+                listView2.Items.Add(new ListViewItem(new string[] { trans.Target.Text }) { Tag = trans.Target });
             }
         }
 
@@ -83,21 +91,25 @@ namespace LingvaPad
                 sentence2 = selector.SelectedSentence;
             });
 
+            d.AddStringField("tags", "Tags");
+
             if (!d.ShowDialog())
                 return;
 
-            var fr = Db.Instance.Translations.FirstOrDefault(z => z.Sentence == sentence1 && z.Translation == sentence2);
-            var fr2 = Db.Instance.Translations.FirstOrDefault(z => z.Sentence == sentence2 && z.Translation == sentence1);
-            if (fr == null && fr2 == null)
+            var fr = Db.Instance.Pairs.FirstOrDefault(z => z.Source == sentence1 && z.Target == sentence2);
+            var fr2 = Db.Instance.Pairs.FirstOrDefault(z => z.Source == sentence2 && z.Target == sentence1);
+            if (fr != null || fr2 != null)
+                if (!GuiHelpers.ShowWarningQuestion("Already exists. Add anyway?"))
+                    return;
+
+            var tagsStr = d.GetStringField("tags").Split(",", StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()).ToArray();
+            Db.Instance.Pairs.Add(new SentencePair()
             {
-                Db.Instance.Translations.Add(new SentenceTranslation()
-                {
-                    Sentence = sentence1,
-                    Translation = sentence2
-                });
-            }
-            else            
-                GuiHelpers.ShowWarning("Already exists");                       
+                Source = sentence1,
+                Target = sentence2,
+                Tags = tagsStr.Select(z => new Tag() { Name = z }).ToArray()
+            });
+
 
             UpdateList();
         }
@@ -107,10 +119,10 @@ namespace LingvaPad
             if (listView1.SelectedItems.Count == 0)
                 return;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
-            if (GuiHelpers.ShowQuestion($"Are you sure to delete  {trans.Sentence.Text}?"))
+            var trans = listView1.SelectedItems[0].Tag as SentencePair;
+            if (GuiHelpers.ShowQuestion($"Are you sure to delete  {trans.Source.Text}?"))
             {
-                Db.Instance.Translations.Remove(trans);
+                Db.Instance.Pairs.Remove(trans);
                 UpdateList();
             }
         }
@@ -119,20 +131,41 @@ namespace LingvaPad
         {
             if (listView1.SelectedItems.Count == 0)
                 return;
+            var trans = listView1.SelectedItems[0].Tag as SentencePair;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
             var d = AutoDialog.DialogHelpers.StartDialog();
-            d.AddStringField("text", "Text", trans.Sentence.Text);
-            //d.AddStringField("translation", "Translation", trans.Translations[0].Text);
+
+            Sentence sentence1 = trans.Source;
+            d.AddCustomDialogField("s1", "Sentence", () =>
+            {
+                SentencesSelector selector = new SentencesSelector();
+
+                selector.ShowDialog();
+                sentence1 = selector.SelectedSentence;
+            });
+
+            Sentence sentence2 = trans.Target;
+            d.AddCustomDialogField("s2", "Translation", () =>
+            {
+                SentencesSelector selector = new SentencesSelector();
+
+                selector.ShowDialog();
+                sentence2 = selector.SelectedSentence;
+            });
+
+            d.AddStringField("tags", "Tags", trans.Tags == null ? "" : string.Join(", ", trans.Tags.Select(z => z.Name)));
 
             if (!d.ShowDialog())
                 return;
 
-            var text = d.GetStringField("text");
-            var translation = d.GetStringField("translation");
-            trans.Sentence.Text = text;
-            //trans.Translations[0].Text = translation;
+            var fr = Db.Instance.Pairs.FirstOrDefault(z => z.Source == sentence1 && z.Target == sentence2);
+            var fr2 = Db.Instance.Pairs.FirstOrDefault(z => z.Source == sentence2 && z.Target == sentence1);
 
+            trans.Source = sentence1;
+            trans.Target = sentence2;
+
+            var tagsStr = d.GetStringField("tags").Split(",", StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()).ToArray();
+            trans.Tags = tagsStr.Select(z => new Tag() { Name = z }).ToArray();
             UpdateList();
         }
 
@@ -141,7 +174,7 @@ namespace LingvaPad
             if (listView1.SelectedItems.Count == 0)
                 return;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
+            var trans = listView1.SelectedItems[0].Tag as SentencePair;
 
             var d = AutoDialog.DialogHelpers.StartDialog();
 
@@ -169,7 +202,7 @@ namespace LingvaPad
             if (listView2.SelectedItems.Count == 0)
                 return;
 
-            var trans = listView1.SelectedItems[0].Tag as SentenceTranslation;
+            var trans = listView1.SelectedItems[0].Tag as SentencePair;
             var trans1 = listView2.SelectedItems[0].Tag as Sentence;
             if (!GuiHelpers.ShowQuestion($"Are you sure to delete: {trans1.Text}?"))
                 return;

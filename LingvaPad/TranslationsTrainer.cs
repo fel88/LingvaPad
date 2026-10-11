@@ -25,6 +25,7 @@ namespace LingvaPad
 
         WebBrowser wb;
         Sentence[] FilteredSentences;
+        SentencePair[] FilteredPairs;
         Sentence Question => FilteredSentences[questionIdx];
         int questionIdx = 0;
         bool showAnswer = false;
@@ -107,10 +108,26 @@ namespace LingvaPad
         {
 
         }
-
-        internal void Init(string v1, string v2)
+        internal void InitByTag(string tag)
         {
-            FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == v1).ToArray();            
+            FilteredPairs = Db.Instance.Pairs.Where(z => z.Tags.Any(u => u.Name == tag)).ToArray();
+            FilteredSentences = FilteredPairs.Select(z=>z.Source).Distinct().ToArray();
+            questionIdx = r.Next(FilteredSentences.Length);
+
+            textBox1.Text = Question.Text;
+
+
+            richTextBox3.Font = textBox1.Font;
+
+            wb = new WebBrowser();
+
+            tableLayoutPanel1.Controls.Add(wb, 0, 1);
+            wb.Dock = DockStyle.Fill;
+
+        }
+        internal void InitByCulture(string culture, string targetCulture)
+        {
+            FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == culture).ToArray();
             questionIdx = r.Next(FilteredSentences.Length);
 
             textBox1.Text = Question.Text;
