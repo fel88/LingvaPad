@@ -43,12 +43,12 @@
             fillBlankToolStripMenuItem = new ToolStripMenuItem();
             translateAloudToolStripMenuItem = new ToolStripMenuItem();
             flashcardsToolStripMenuItem1 = new ToolStripMenuItem();
+            customPairsToolStripMenuItem = new ToolStripMenuItem();
             toolStripDropDownButton3 = new ToolStripDropDownButton();
             translationsToolStripMenuItem1 = new ToolStripMenuItem();
             sentencesToolStripMenuItem = new ToolStripMenuItem();
             flashcardsToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton1 = new ToolStripButton();
-            customPairsToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -157,6 +157,13 @@
             flashcardsToolStripMenuItem1.Text = "flashcards";
             flashcardsToolStripMenuItem1.Click += flashcardsToolStripMenuItem1_Click;
             // 
+            // customPairsToolStripMenuItem
+            // 
+            customPairsToolStripMenuItem.Name = "customPairsToolStripMenuItem";
+            customPairsToolStripMenuItem.Size = new Size(180, 22);
+            customPairsToolStripMenuItem.Text = "custom pairs";
+            customPairsToolStripMenuItem.Click += customPairsToolStripMenuItem_Click;
+            // 
             // toolStripDropDownButton3
             // 
             toolStripDropDownButton3.DropDownItems.AddRange(new ToolStripItem[] { translationsToolStripMenuItem1, sentencesToolStripMenuItem, flashcardsToolStripMenuItem });
@@ -195,19 +202,13 @@
             toolStripButton1.Size = new Size(68, 22);
             toolStripButton1.Text = "Statistic";
             // 
-            // customPairsToolStripMenuItem
-            // 
-            customPairsToolStripMenuItem.Name = "customPairsToolStripMenuItem";
-            customPairsToolStripMenuItem.Size = new Size(180, 22);
-            customPairsToolStripMenuItem.Text = "custom pairs";
-            customPairsToolStripMenuItem.Click += customPairsToolStripMenuItem_Click;
-            // 
             // mdi
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1348, 783);
             Controls.Add(toolStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             IsMdiContainer = true;
             Name = "mdi";
             StartPosition = FormStartPosition.CenterScreen;

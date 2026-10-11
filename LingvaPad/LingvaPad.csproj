@@ -7,6 +7,7 @@
 	  <UseWindowsForms>true</UseWindowsForms>
 	  <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -64,6 +65,10 @@
     <None Remove="Icons\ruler-triangle.png" />
     <None Remove="Icons\wrench-screwdriver.png" />
     <None Remove="Resources\spell-check.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
