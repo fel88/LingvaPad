@@ -18,7 +18,7 @@ namespace LingvaPad
             foreach (var item in Db.Instance.Sentences)
             {
                 var tagsStr = item.Tags == null ? "" : string.Join(", ", item.Tags.Select(z => z.Name));
-                string[] stringsToSearch = [item.Text.ToLower(), tagsStr];
+                string[] stringsToSearch = [item.Text.ToLower(), tagsStr, item.Culture];
                 if (!string.IsNullOrEmpty(filter) && !stringsToSearch.Any(z => z.Contains(filterLow)))
                     continue;
 
@@ -115,6 +115,7 @@ namespace LingvaPad
             var trans = listView1.SelectedItems[0].Tag as Sentence;
             var d = AutoDialog.DialogHelpers.StartDialog();
             d.AddStringField("text", "Text", trans.Text);
+            d.AddStringField("culture", "Culture", trans.Culture);
             d.AddStringField("tags", "Tags", trans.Tags == null ? "" : string.Join(", ", trans.Tags.Select(z => z.Name)));
 
             if (!d.ShowDialog())
@@ -124,6 +125,7 @@ namespace LingvaPad
             var tagsStr = d.GetStringField("tags").Split(",", StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()).ToArray();
             trans.Tags = tagsStr.Select(z => new Tag() { Name = z }).ToArray();
             trans.Text = text;
+            trans.Culture = d.GetStringField("culture");
 
             UpdateList();
         }

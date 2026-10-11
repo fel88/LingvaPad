@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -53,8 +54,18 @@ namespace LingvaPad
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
+            lastOpenedPath = ofd.FileName;
+            SaveSettings();
             var doc = XDocument.Load(ofd.FileName);
             Db.Instance = new Db(doc.Root);
+        }
+
+        string lastOpenedPath;
+        void SaveSettings()
+        {
+            XDocument doc = new XDocument();
+            doc.Add(new XElement("root", new XElement("setting", new XElement("path", new XCData(lastOpenedPath)))));
+            doc.Save("settings.xml");
         }
 
         private void translationsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -159,6 +170,23 @@ namespace LingvaPad
 
             f.MdiParent = this;
             f.Show();
+        }
+
+        private void openRecentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists("settings.xml"))
+                return;
+
+            var doc = XDocument.Load("settings.xml");
+            var path = doc.Descendants("path").First().Value;
+
+
+            if (!GuiHelpers.ShowQuestion($"Are you sure to open: {path}?"))
+                return;
+
+            lastOpenedPath = path;            
+            doc = XDocument.Load(path);
+            Db.Instance = new Db(doc.Root);
         }
     }
 }
