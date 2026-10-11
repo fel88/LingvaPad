@@ -37,6 +37,8 @@
             openRecentToolStripMenuItem = new ToolStripMenuItem();
             toolStripDropDownButton1 = new ToolStripDropDownButton();
             translationsToolStripMenuItem = new ToolStripMenuItem();
+            simpleToolStripMenuItem = new ToolStripMenuItem();
+            puzzleToolStripMenuItem = new ToolStripMenuItem();
             diagramsToolStripMenuItem = new ToolStripMenuItem();
             quizToolStripMenuItem = new ToolStripMenuItem();
             simpleRepeatAloudToolStripMenuItem = new ToolStripMenuItem();
@@ -111,10 +113,25 @@
             // 
             // translationsToolStripMenuItem
             // 
+            translationsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { simpleToolStripMenuItem, puzzleToolStripMenuItem });
             translationsToolStripMenuItem.Name = "translationsToolStripMenuItem";
             translationsToolStripMenuItem.Size = new Size(180, 22);
             translationsToolStripMenuItem.Text = "translations";
             translationsToolStripMenuItem.Click += translationsToolStripMenuItem_Click;
+            // 
+            // simpleToolStripMenuItem
+            // 
+            simpleToolStripMenuItem.Name = "simpleToolStripMenuItem";
+            simpleToolStripMenuItem.Size = new Size(180, 22);
+            simpleToolStripMenuItem.Text = "simple";
+            simpleToolStripMenuItem.Click += simpleToolStripMenuItem_Click;
+            // 
+            // puzzleToolStripMenuItem
+            // 
+            puzzleToolStripMenuItem.Name = "puzzleToolStripMenuItem";
+            puzzleToolStripMenuItem.Size = new Size(180, 22);
+            puzzleToolStripMenuItem.Text = "puzzle";
+            puzzleToolStripMenuItem.Click += puzzleToolStripMenuItem_Click;
             // 
             // diagramsToolStripMenuItem
             // 
@@ -241,5 +258,7 @@
         private ToolStripMenuItem flashcardsToolStripMenuItem;
         private ToolStripMenuItem flashcardsToolStripMenuItem1;
         private ToolStripMenuItem customPairsToolStripMenuItem;
+        private ToolStripMenuItem simpleToolStripMenuItem;
+        private ToolStripMenuItem puzzleToolStripMenuItem;
     }
 }
