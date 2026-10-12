@@ -37,8 +37,6 @@
             openRecentToolStripMenuItem = new ToolStripMenuItem();
             toolStripDropDownButton1 = new ToolStripDropDownButton();
             translationsToolStripMenuItem = new ToolStripMenuItem();
-            simpleToolStripMenuItem = new ToolStripMenuItem();
-            puzzleToolStripMenuItem = new ToolStripMenuItem();
             diagramsToolStripMenuItem = new ToolStripMenuItem();
             quizToolStripMenuItem = new ToolStripMenuItem();
             simpleRepeatAloudToolStripMenuItem = new ToolStripMenuItem();
@@ -52,9 +50,9 @@
             flashcardsToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton1 = new ToolStripButton();
             statusStrip1 = new StatusStrip();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             toolStripStatusLabel3 = new ToolStripStatusLabel();
-            toolStripStatusLabel1 = new ToolStripStatusLabel();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             SuspendLayout();
@@ -119,71 +117,56 @@
             // 
             // translationsToolStripMenuItem
             // 
-            translationsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { simpleToolStripMenuItem, puzzleToolStripMenuItem });
             translationsToolStripMenuItem.Name = "translationsToolStripMenuItem";
-            translationsToolStripMenuItem.Size = new Size(152, 22);
+            translationsToolStripMenuItem.Size = new Size(180, 22);
             translationsToolStripMenuItem.Text = "translations";
             translationsToolStripMenuItem.Click += translationsToolStripMenuItem_Click;
-            // 
-            // simpleToolStripMenuItem
-            // 
-            simpleToolStripMenuItem.Name = "simpleToolStripMenuItem";
-            simpleToolStripMenuItem.Size = new Size(109, 22);
-            simpleToolStripMenuItem.Text = "simple";
-            simpleToolStripMenuItem.Click += simpleToolStripMenuItem_Click;
-            // 
-            // puzzleToolStripMenuItem
-            // 
-            puzzleToolStripMenuItem.Name = "puzzleToolStripMenuItem";
-            puzzleToolStripMenuItem.Size = new Size(109, 22);
-            puzzleToolStripMenuItem.Text = "puzzle";
-            puzzleToolStripMenuItem.Click += puzzleToolStripMenuItem_Click;
             // 
             // diagramsToolStripMenuItem
             // 
             diagramsToolStripMenuItem.Name = "diagramsToolStripMenuItem";
-            diagramsToolStripMenuItem.Size = new Size(152, 22);
+            diagramsToolStripMenuItem.Size = new Size(180, 22);
             diagramsToolStripMenuItem.Text = "diagrams";
             // 
             // quizToolStripMenuItem
             // 
             quizToolStripMenuItem.Name = "quizToolStripMenuItem";
-            quizToolStripMenuItem.Size = new Size(152, 22);
+            quizToolStripMenuItem.Size = new Size(180, 22);
             quizToolStripMenuItem.Text = "quiz";
             quizToolStripMenuItem.Click += quizToolStripMenuItem_Click;
             // 
             // simpleRepeatAloudToolStripMenuItem
             // 
             simpleRepeatAloudToolStripMenuItem.Name = "simpleRepeatAloudToolStripMenuItem";
-            simpleRepeatAloudToolStripMenuItem.Size = new Size(152, 22);
+            simpleRepeatAloudToolStripMenuItem.Size = new Size(180, 22);
             simpleRepeatAloudToolStripMenuItem.Text = "repeat aloud";
             simpleRepeatAloudToolStripMenuItem.Click += simpleRepeatAloudToolStripMenuItem_Click;
             // 
             // fillBlankToolStripMenuItem
             // 
             fillBlankToolStripMenuItem.Name = "fillBlankToolStripMenuItem";
-            fillBlankToolStripMenuItem.Size = new Size(152, 22);
+            fillBlankToolStripMenuItem.Size = new Size(180, 22);
             fillBlankToolStripMenuItem.Text = "fill blank";
             fillBlankToolStripMenuItem.Click += fillBlankToolStripMenuItem_Click;
             // 
             // translateAloudToolStripMenuItem
             // 
             translateAloudToolStripMenuItem.Name = "translateAloudToolStripMenuItem";
-            translateAloudToolStripMenuItem.Size = new Size(152, 22);
+            translateAloudToolStripMenuItem.Size = new Size(180, 22);
             translateAloudToolStripMenuItem.Text = "translate aloud";
             translateAloudToolStripMenuItem.Click += translateAloudToolStripMenuItem_Click;
             // 
             // flashcardsToolStripMenuItem1
             // 
             flashcardsToolStripMenuItem1.Name = "flashcardsToolStripMenuItem1";
-            flashcardsToolStripMenuItem1.Size = new Size(152, 22);
+            flashcardsToolStripMenuItem1.Size = new Size(180, 22);
             flashcardsToolStripMenuItem1.Text = "flashcards";
             flashcardsToolStripMenuItem1.Click += flashcardsToolStripMenuItem1_Click;
             // 
             // customPairsToolStripMenuItem
             // 
             customPairsToolStripMenuItem.Name = "customPairsToolStripMenuItem";
-            customPairsToolStripMenuItem.Size = new Size(152, 22);
+            customPairsToolStripMenuItem.Size = new Size(180, 22);
             customPairsToolStripMenuItem.Text = "custom pairs";
             customPairsToolStripMenuItem.Click += customPairsToolStripMenuItem_Click;
             // 
@@ -234,10 +217,15 @@
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripStatusLabel1
+            // 
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(0, 17);
+            // 
             // toolStripStatusLabel2
             // 
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            toolStripStatusLabel2.Size = new Size(1289, 17);
+            toolStripStatusLabel2.Size = new Size(1320, 17);
             toolStripStatusLabel2.Spring = true;
             // 
             // toolStripStatusLabel3
@@ -245,11 +233,6 @@
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
             toolStripStatusLabel3.Size = new Size(13, 17);
             toolStripStatusLabel3.Text = "..";
-            // 
-            // toolStripStatusLabel1
-            // 
-            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(0, 17);
             // 
             // mdi
             // 
@@ -293,8 +276,6 @@
         private ToolStripMenuItem flashcardsToolStripMenuItem;
         private ToolStripMenuItem flashcardsToolStripMenuItem1;
         private ToolStripMenuItem customPairsToolStripMenuItem;
-        private ToolStripMenuItem simpleToolStripMenuItem;
-        private ToolStripMenuItem puzzleToolStripMenuItem;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripStatusLabel toolStripStatusLabel2;

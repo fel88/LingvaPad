@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
+using Font = System.Drawing.Font;
 
 
 namespace LingvaPad
@@ -20,9 +21,92 @@ namespace LingvaPad
         public TranslationsTrainer()
         {
             InitializeComponent();
+            pictureBox1.Paint += PictureBox1_Paint;
+            pictureBox1.MouseDown += PictureBox1_MouseDown;
+        }
+        bool wasDown = false;
 
+        Point downLocation;
+        private void PictureBox1_MouseDown(object? sender, MouseEventArgs e)
+
+        {
+            downLocation = e.Location;
+            wasDown = true;
         }
 
+        public class PuzzlePiece
+        {
+            public string Text;
+            public int Index;
+        }
+        List<PuzzlePiece> puzzlePieces = new List<PuzzlePiece>();
+        List<PuzzlePiece> constructed = new List<PuzzlePiece>();
+        private void PictureBox1_Paint(object? sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            e.Graphics.Clear(Color.White);
+
+
+            var curp = pictureBox1.PointToClient(Cursor.Position);
+
+            var gr = e.Graphics;
+            int xx = 0;
+            int yy = 0;
+            var font = new Font("Consoles", 18);
+            int gap = 20;
+            List<PuzzlePiece> toRemove = new List<PuzzlePiece>();
+            foreach (var item in constructed)
+            {
+
+                var ms = gr.MeasureString(item.Text, font);
+                gr.DrawRectangle(Pens.Black, xx, yy, ms.Width, ms.Height);
+                if (new RectangleF(xx, yy, ms.Width, ms.Height).Contains(curp))
+                {
+
+                    gr.FillRectangle(Brushes.LightGreen, xx, yy, ms.Width, ms.Height);
+                }
+                if (wasDown && (new RectangleF(xx, yy, ms.Width, ms.Height).Contains(downLocation)))
+                {
+                    toRemove.Add(item);
+                    wasDown = false;
+                }
+                gr.DrawString(item.Text, font, Brushes.Black, xx, yy);
+                xx += (int)ms.Width + gap;
+            }
+            foreach (var item in toRemove)
+            {
+                constructed.Remove(item);
+            }
+
+            xx = 0;
+            yy = 100;
+            foreach (var item in puzzlePieces)
+            {
+
+                var ms = gr.MeasureString(item.Text, font);
+
+
+                if (!constructed.Contains(item))
+                {
+                    if (wasDown && (new RectangleF(xx, yy, ms.Width, ms.Height).Contains(downLocation)))
+                    {
+                        constructed.Add(item);
+                        wasDown = false;
+                    }
+                    gr.DrawRectangle(Pens.Black, xx, yy, ms.Width, ms.Height);
+                    if (new RectangleF(xx, yy, ms.Width, ms.Height).Contains(curp))
+                    {
+
+                        gr.FillRectangle(Brushes.LightGreen, xx, yy, ms.Width, ms.Height);
+                    }
+                    gr.DrawString(item.Text, new Font("Consoles", 18), Brushes.Black, xx, yy);
+
+                }
+
+                xx += (int)ms.Width + gap;
+            }
+        }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Enter)
@@ -59,12 +143,17 @@ namespace LingvaPad
         {
             Check();
         }
+
         public void Check()
         {
             textBox1.Text = Question.Text;
             showAnswer = true;
 
-            var lcs = Db.Instance.TranslationsLookUp[Question].Select(z => TextDifferentiator.FindDifference(richTextBox3.Text, z.Text)).OrderBy(z => z.Count(u => !u.Correct)).ToArray();
+            var answer = richTextBox3.Text;
+            if (puzzleMode)
+                answer = string.Join(" ", constructed.Select(z => z.Text));
+
+            var lcs = Db.Instance.TranslationsLookUp[Question].Select(z => TextDifferentiator.FindDifference(answer, z.Text)).OrderBy(z => z.Count(u => !u.Correct)).ToArray();
             //find closest answer and make a decision about corectness according current checking policy
             var ret = lcs.First();
             label1.Font = new System.Drawing.Font("Consolas", 18);
@@ -115,16 +204,26 @@ namespace LingvaPad
             Next();
         }
 
-        public void Next()
-        {
-            showAnswer = false;
-            wb.DocumentText = "";
+        void ShowNext()
+        {            
             var oldIdx = questionIdx;
             if (FilteredSentences.Length > 1)
                 do
                 {
                     questionIdx = r.Next(FilteredSentences.Length);
                 } while (questionIdx == oldIdx);
+            puzzlePieces = Db.Instance.TranslationsLookUp[Question][0].Text.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(z => new PuzzlePiece() { Text = z }).ToList();
+            puzzlePieces = puzzlePieces.OrderBy(z => r.Next(100)).ToList();
+
+        }
+        public void Next()
+        {
+            showAnswer = false;
+            wb.DocumentText = "";
+         
+            ShowNext();
+            constructed.Clear();
+
             var tags = Db.Instance.TranslationsLookUp[Question].SelectMany(z => z.Tags).ToList();
             tags.AddRange(Question.Tags);
             label2.Text = string.Join(", ", tags.Distinct().Select(z => z.Name));
@@ -148,7 +247,8 @@ namespace LingvaPad
             FilteredPairs = Db.Instance.Pairs.Where(z => z.Tags.Any(u => u.Name == tag)).ToArray();
             FilteredSentences = FilteredPairs.Select(z => z.Source).Distinct().ToArray();
             toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
-            questionIdx = r.Next(FilteredSentences.Length);
+            ShowNext();
+                        
 
             textBox1.Text = Question.Text;
 
@@ -166,7 +266,9 @@ namespace LingvaPad
             FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == culture).ToArray();
             FilteredSentences = FilteredSentences.Where(z => Db.Instance.Pairs.Any(u => (u.Target.Culture == targetCulture && u.Source == z) || (u.Target == z && u.Source.Culture == targetCulture))).ToArray();
 
-            questionIdx = r.Next(FilteredSentences.Length);
+            
+            ShowNext();
+
             toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
 
             textBox1.Text = Question.Text;
@@ -185,6 +287,27 @@ namespace LingvaPad
         {
             showTags = checkBox1.Checked;
             label2.Visible = showTags;
+        }
+
+        bool puzzleMode = false;
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            puzzleMode = radioButton1.Checked;
+            pictureBox1.Visible = puzzleMode;
+            richTextBox3.Visible = !puzzleMode;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            puzzleMode = radioButton1.Checked;
+            pictureBox1.Visible = puzzleMode;
+            richTextBox3.Visible = !puzzleMode;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            pictureBox1.Invalidate();
+
         }
     }
 }

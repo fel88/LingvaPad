@@ -26,7 +26,20 @@ namespace LingvaPad
 
         private void translationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            TranslationsTrainer f = new TranslationsTrainer();
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            d.AddOptionsField("mode", "Mode", ["ru->eng", "eng->ru"], 0);
+            if (!d.ShowDialog())
+                return;
 
+            var modeIdx = d.GetOptionsFieldIdx("mode");
+            if (modeIdx == 0)
+                f.InitByCulture("ru", "en");
+            else
+                f.InitByCulture("en", "ru");
+
+            f.MdiParent = this;
+            f.Show();
         }
 
         private void tmplateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -158,40 +171,11 @@ namespace LingvaPad
             f.Show();
         }
 
-        private void puzzleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TranslationsTrainerPuzzle f = new TranslationsTrainerPuzzle();
-            var d = AutoDialog.DialogHelpers.StartDialog();
-            d.AddOptionsField("mode", "Mode", ["ru->eng", "eng->ru"], 0);
-            if (!d.ShowDialog())
-                return;
-
-            var modeIdx = d.GetOptionsFieldIdx("mode");
-            if (modeIdx == 0)
-                f.InitByCulture("ru", "en");
-            else
-                f.InitByCulture("en", "ru");
-
-            f.MdiParent = this;
-            f.Show();
-        }
+        
 
         private void simpleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TranslationsTrainer f = new TranslationsTrainer();
-            var d = AutoDialog.DialogHelpers.StartDialog();
-            d.AddOptionsField("mode", "Mode", ["ru->eng", "eng->ru"], 0);
-            if (!d.ShowDialog())
-                return;
-
-            var modeIdx = d.GetOptionsFieldIdx("mode");
-            if (modeIdx == 0)
-                f.InitByCulture("ru", "en");
-            else
-                f.InitByCulture("en", "ru");
-
-            f.MdiParent = this;
-            f.Show();
+            
         }
 
       
