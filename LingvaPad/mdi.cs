@@ -171,13 +171,6 @@ namespace LingvaPad
             f.Show();
         }
 
-        
-
-        private void simpleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-      
+              
     }
 }
