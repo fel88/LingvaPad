@@ -61,21 +61,20 @@
             tableLayoutPanel1.Location = new Point(0, 25);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 4;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(800, 497);
+            tableLayoutPanel1.Size = new Size(800, 554);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // richTextBox3
             // 
             richTextBox3.BorderStyle = BorderStyle.None;
             richTextBox3.Dock = DockStyle.Fill;
-            richTextBox3.Location = new Point(3, 309);
+            richTextBox3.Location = new Point(3, 305);
             richTextBox3.Name = "richTextBox3";
-            richTextBox3.Size = new Size(794, 84);
+            richTextBox3.Size = new Size(794, 145);
             richTextBox3.TabIndex = 2;
             richTextBox3.Text = "";
             // 
@@ -87,7 +86,7 @@
             panel1.Controls.Add(button3);
             panel1.Controls.Add(button2);
             panel1.Controls.Add(button1);
-            panel1.Location = new Point(3, 399);
+            panel1.Location = new Point(3, 456);
             panel1.Name = "panel1";
             panel1.Size = new Size(794, 94);
             panel1.TabIndex = 3;
@@ -166,7 +165,7 @@
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
-            textBox1.Size = new Size(794, 147);
+            textBox1.Size = new Size(794, 145);
             textBox1.TabIndex = 4;
             textBox1.TextAlign = HorizontalAlignment.Center;
             // 
@@ -200,7 +199,7 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1 });
-            statusStrip1.Location = new Point(0, 522);
+            statusStrip1.Location = new Point(0, 579);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(800, 22);
             statusStrip1.TabIndex = 2;
@@ -216,7 +215,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 544);
+            ClientSize = new Size(800, 601);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(toolStrip1);
             Controls.Add(statusStrip1);

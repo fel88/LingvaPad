@@ -142,6 +142,7 @@ namespace LingvaPad
         {
 
         }
+
         internal void InitByTag(string tag)
         {
             FilteredPairs = Db.Instance.Pairs.Where(z => z.Tags.Any(u => u.Name == tag)).ToArray();
@@ -158,11 +159,13 @@ namespace LingvaPad
 
             tableLayoutPanel1.Controls.Add(wb, 0, 1);
             wb.Dock = DockStyle.Fill;
-
         }
+
         internal void InitByCulture(string culture, string targetCulture)
         {
             FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == culture).ToArray();
+            FilteredSentences = FilteredSentences.Where(z => Db.Instance.Pairs.Any(u => (u.Target.Culture == targetCulture && u.Source == z) || (u.Target == z && u.Source.Culture == targetCulture))).ToArray();
+
             questionIdx = r.Next(FilteredSentences.Length);
             toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
 

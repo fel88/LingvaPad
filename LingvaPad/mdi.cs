@@ -56,8 +56,29 @@ namespace LingvaPad
 
             lastOpenedPath = ofd.FileName;
             SaveSettings();
-            var doc = XDocument.Load(ofd.FileName);
+            Open(ofd.FileName);
+        }
+
+        private void openRecentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists("settings.xml"))
+                return;
+
+            var doc = XDocument.Load("settings.xml");
+            var path = doc.Descendants("path").First().Value;
+
+            if (!GuiHelpers.ShowQuestion($"Are you sure to open: {path}?"))
+                return;
+
+            lastOpenedPath = path;
+            Open(path);            
+        }
+
+        private void Open(string path)
+        {
+            var doc = XDocument.Load(path);
             Db.Instance = new Db(doc.Root);
+            toolStripStatusLabel3.Text = $"Sentences: {Db.Instance.Sentences.Count}   Pairs: {Db.Instance.Pairs.Count}";
         }
 
         string lastOpenedPath;
@@ -173,21 +194,6 @@ namespace LingvaPad
             f.Show();
         }
 
-        private void openRecentToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!File.Exists("settings.xml"))
-                return;
-
-            var doc = XDocument.Load("settings.xml");
-            var path = doc.Descendants("path").First().Value;
-
-
-            if (!GuiHelpers.ShowQuestion($"Are you sure to open: {path}?"))
-                return;
-
-            lastOpenedPath = path;            
-            doc = XDocument.Load(path);
-            Db.Instance = new Db(doc.Root);
-        }
+      
     }
 }

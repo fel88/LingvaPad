@@ -26,6 +26,12 @@ namespace LingvaPad
             Data = b64;
             var ms = new MemoryStream(b64);
             Image = Bitmap.FromStream(ms) as Bitmap;
+            List<Tag> tags = new List<Tag>();
+            if (elem.Element("tags") != null)
+                foreach (var titem in elem.Element("tags").Elements())
+                    tags.Add(new Tag(titem.Value.Trim()));
+
+            Tags = tags.ToArray();
         }
 
         public int Id;

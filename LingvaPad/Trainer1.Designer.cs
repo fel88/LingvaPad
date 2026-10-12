@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Trainer1));
             tableLayoutPanel1 = new TableLayoutPanel();
             panel1 = new Panel();
+            checkBox1 = new CheckBox();
+            textBox2 = new TextBox();
             button2 = new Button();
             textBox1 = new TextBox();
             toolStrip1 = new ToolStrip();
@@ -63,14 +65,37 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(checkBox1);
+            panel1.Controls.Add(textBox2);
             panel1.Controls.Add(button2);
             panel1.Location = new Point(3, 188);
             panel1.Name = "panel1";
             panel1.Size = new Size(790, 94);
             panel1.TabIndex = 3;
             // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new Point(9, 15);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(77, 19);
+            checkBox1.TabIndex = 3;
+            checkBox1.Text = "show pair";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            // 
+            // textBox2
+            // 
+            textBox2.Location = new Point(111, 13);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(646, 23);
+            textBox2.TabIndex = 2;
+            textBox2.Visible = false;
+            // 
             // button2
             // 
+            button2.Image = Properties.Resources.arrow;
+            button2.ImageAlign = ContentAlignment.MiddleRight;
             button2.Location = new Point(337, 42);
             button2.Name = "button2";
             button2.Size = new Size(96, 44);
@@ -147,6 +172,7 @@
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             statusStrip1.ResumeLayout(false);
@@ -166,5 +192,7 @@
         private ToolStripButton toolStripButton2;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
+        private CheckBox checkBox1;
+        private TextBox textBox2;
     }
 }

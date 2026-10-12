@@ -39,9 +39,10 @@
             removeToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             copyImageToClipboardToolStripMenuItem = new ToolStripMenuItem();
+            resaveToJpegToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
-            resaveToJpegToolStripMenuItem = new ToolStripMenuItem();
+            columnHeader3 = new ColumnHeader();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             contextMenuStrip1.SuspendLayout();
@@ -75,7 +76,7 @@
             // 
             // listView1
             // 
-            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2 });
+            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3 });
             listView1.ContextMenuStrip = contextMenuStrip1;
             listView1.Dock = DockStyle.Fill;
             listView1.FullRowSelect = true;
@@ -126,6 +127,14 @@
             copyImageToClipboardToolStripMenuItem.Text = "copy image to clipboard";
             copyImageToClipboardToolStripMenuItem.Click += copyImageToClipboardToolStripMenuItem_Click;
             // 
+            // resaveToJpegToolStripMenuItem
+            // 
+            resaveToJpegToolStripMenuItem.Image = Properties.Resources.image_resize_actual;
+            resaveToJpegToolStripMenuItem.Name = "resaveToJpegToolStripMenuItem";
+            resaveToJpegToolStripMenuItem.Size = new Size(203, 22);
+            resaveToJpegToolStripMenuItem.Text = "resave to jpeg";
+            resaveToJpegToolStripMenuItem.Click += resaveToJpegToolStripMenuItem_Click;
+            // 
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1 });
@@ -140,14 +149,6 @@
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             toolStripStatusLabel1.Size = new Size(16, 17);
             toolStripStatusLabel1.Text = "...";
-            // 
-            // resaveToJpegToolStripMenuItem
-            // 
-            resaveToJpegToolStripMenuItem.Image = Properties.Resources.image_resize_actual;
-            resaveToJpegToolStripMenuItem.Name = "resaveToJpegToolStripMenuItem";
-            resaveToJpegToolStripMenuItem.Size = new Size(203, 22);
-            resaveToJpegToolStripMenuItem.Text = "resave to jpeg";
-            resaveToJpegToolStripMenuItem.Click += resaveToJpegToolStripMenuItem_Click;
             // 
             // FlashcardsEditor
             // 
@@ -182,5 +183,6 @@
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripMenuItem resaveToJpegToolStripMenuItem;
+        private ColumnHeader columnHeader3;
     }
 }

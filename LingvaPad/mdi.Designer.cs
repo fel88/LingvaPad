@@ -51,7 +51,12 @@
             sentencesToolStripMenuItem = new ToolStripMenuItem();
             flashcardsToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton1 = new ToolStripButton();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabel2 = new ToolStripStatusLabel();
+            toolStripStatusLabel3 = new ToolStripStatusLabel();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
             toolStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip1
@@ -76,7 +81,7 @@
             // 
             openToolStripMenuItem.Image = Properties.Resources.folder_horizontal_open;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(180, 22);
+            openToolStripMenuItem.Size = new Size(139, 22);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
@@ -84,7 +89,7 @@
             // 
             saveAsToolStripMenuItem.Image = Properties.Resources.disk__arrow;
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(180, 22);
+            saveAsToolStripMenuItem.Size = new Size(139, 22);
             saveAsToolStripMenuItem.Text = "Save as";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
@@ -92,14 +97,14 @@
             // 
             saveToolStripMenuItem.Image = (Image)resources.GetObject("saveToolStripMenuItem.Image");
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(180, 22);
+            saveToolStripMenuItem.Size = new Size(139, 22);
             saveToolStripMenuItem.Text = "Save";
             // 
             // openRecentToolStripMenuItem
             // 
             openRecentToolStripMenuItem.Image = Properties.Resources.folder_bookmark;
             openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
-            openRecentToolStripMenuItem.Size = new Size(180, 22);
+            openRecentToolStripMenuItem.Size = new Size(139, 22);
             openRecentToolStripMenuItem.Text = "Open recent";
             openRecentToolStripMenuItem.Click += openRecentToolStripMenuItem_Click;
             // 
@@ -220,11 +225,38 @@
             toolStripButton1.Size = new Size(68, 22);
             toolStripButton1.Text = "Statistic";
             // 
+            // statusStrip1
+            // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabel2, toolStripStatusLabel3 });
+            statusStrip1.Location = new Point(0, 761);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(1348, 22);
+            statusStrip1.TabIndex = 3;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel2
+            // 
+            toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            toolStripStatusLabel2.Size = new Size(1289, 17);
+            toolStripStatusLabel2.Spring = true;
+            // 
+            // toolStripStatusLabel3
+            // 
+            toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            toolStripStatusLabel3.Size = new Size(13, 17);
+            toolStripStatusLabel3.Text = "..";
+            // 
+            // toolStripStatusLabel1
+            // 
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(0, 17);
+            // 
             // mdi
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1348, 783);
+            Controls.Add(statusStrip1);
             Controls.Add(toolStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             IsMdiContainer = true;
@@ -233,6 +265,8 @@
             Text = "LingvaPad";
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -261,5 +295,9 @@
         private ToolStripMenuItem customPairsToolStripMenuItem;
         private ToolStripMenuItem simpleToolStripMenuItem;
         private ToolStripMenuItem puzzleToolStripMenuItem;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripStatusLabel toolStripStatusLabel2;
+        private ToolStripStatusLabel toolStripStatusLabel3;
     }
 }

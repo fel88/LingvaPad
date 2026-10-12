@@ -26,7 +26,9 @@ namespace LingvaPad
             listView1.Items.Clear();
             foreach (var item in Db.Instance.Flashcards)
             {
-                listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Description }) { Tag = item });
+                var tagsStr = item.Tags == null ? "" : string.Join(", ", item.Tags.Select(z => z.Name));
+
+                listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Description, tagsStr }) { Tag = item });
             }
         }
 
@@ -73,16 +75,19 @@ namespace LingvaPad
             if (listView1.SelectedItems.Count == 0)
                 return;
 
-
             var fc = listView1.SelectedItems[0].Tag as Flashcard;
 
             var d = AutoDialog.DialogHelpers.StartDialog();
             d.AddStringField("desc", "Desc", fc.Description);
+            d.AddStringField("tags", "Tags", fc.Tags == null ? "" : string.Join(", ", fc.Tags.Select(z => z.Name)));
 
             if (!d.ShowDialog())
                 return;
 
             fc.Description = d.GetStringField("desc");
+
+            var tagsStr = d.GetStringField("tags").Split(",", StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()).ToArray();
+            fc.Tags = tagsStr.Select(z => new Tag() { Name = z }).ToArray();
             UpdateList();
         }
 
@@ -102,7 +107,7 @@ namespace LingvaPad
 
             var fc = listView1.SelectedItems[0].Tag as Flashcard;
             var ms = new MemoryStream();
-            fc.Image.Save(ms, ImageFormat.Jpeg);            
+            fc.Image.Save(ms, ImageFormat.Jpeg);
             var data = ms.ToArray();
             var ratio = fc.Data.Length / (double)data.Length;
             if (ratio > 1)
