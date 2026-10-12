@@ -32,6 +32,9 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             richTextBox3 = new RichTextBox();
             panel1 = new Panel();
+            label2 = new Label();
+            checkBox1 = new CheckBox();
+            label1 = new Label();
             button3 = new Button();
             button2 = new Button();
             button1 = new Button();
@@ -39,10 +42,12 @@
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
             toolStripButton2 = new ToolStripButton();
-            label1 = new Label();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
             tableLayoutPanel1.SuspendLayout();
             panel1.SuspendLayout();
             toolStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -61,14 +66,14 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(800, 519);
+            tableLayoutPanel1.Size = new Size(800, 497);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // richTextBox3
             // 
             richTextBox3.BorderStyle = BorderStyle.None;
             richTextBox3.Dock = DockStyle.Fill;
-            richTextBox3.Location = new Point(3, 331);
+            richTextBox3.Location = new Point(3, 309);
             richTextBox3.Name = "richTextBox3";
             richTextBox3.Size = new Size(794, 84);
             richTextBox3.TabIndex = 2;
@@ -76,14 +81,47 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(label2);
+            panel1.Controls.Add(checkBox1);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(button3);
             panel1.Controls.Add(button2);
             panel1.Controls.Add(button1);
-            panel1.Location = new Point(3, 421);
+            panel1.Location = new Point(3, 399);
             panel1.Name = "panel1";
             panel1.Size = new Size(794, 94);
             panel1.TabIndex = 3;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.Location = new Point(20, 24);
+            label2.Name = "label2";
+            label2.Size = new Size(52, 21);
+            label2.TabIndex = 5;
+            label2.Text = "label2";
+            label2.Visible = false;
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new Point(31, 56);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(79, 19);
+            checkBox1.TabIndex = 4;
+            checkBox1.Text = "show tags";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(174, 3);
+            label1.Name = "label1";
+            label1.Size = new Size(38, 15);
+            label1.TabIndex = 3;
+            label1.Text = "label1";
             // 
             // button3
             // 
@@ -97,6 +135,8 @@
             // 
             // button2
             // 
+            button2.Image = Properties.Resources.arrow;
+            button2.ImageAlign = ContentAlignment.MiddleRight;
             button2.Location = new Point(337, 42);
             button2.Name = "button2";
             button2.Size = new Size(96, 44);
@@ -107,6 +147,8 @@
             // 
             // button1
             // 
+            button1.Image = Properties.Resources.tick;
+            button1.ImageAlign = ContentAlignment.MiddleLeft;
             button1.Location = new Point(235, 42);
             button1.Name = "button1";
             button1.Size = new Size(96, 44);
@@ -124,7 +166,7 @@
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
-            textBox1.Size = new Size(794, 158);
+            textBox1.Size = new Size(794, 147);
             textBox1.TabIndex = 4;
             textBox1.TextAlign = HorizontalAlignment.Center;
             // 
@@ -155,14 +197,20 @@
             toolStripButton2.Text = "settings";
             toolStripButton2.Click += toolStripButton2_Click;
             // 
-            // label1
+            // statusStrip1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(174, 3);
-            label1.Name = "label1";
-            label1.Size = new Size(38, 15);
-            label1.TabIndex = 3;
-            label1.Text = "label1";
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1 });
+            statusStrip1.Location = new Point(0, 522);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(800, 22);
+            statusStrip1.TabIndex = 2;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(13, 17);
+            toolStripStatusLabel1.Text = "..";
             // 
             // TranslationsTrainer
             // 
@@ -171,6 +219,7 @@
             ClientSize = new Size(800, 544);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(toolStrip1);
+            Controls.Add(statusStrip1);
             Name = "TranslationsTrainer";
             Text = "TranslationsTrainer";
             tableLayoutPanel1.ResumeLayout(false);
@@ -179,6 +228,8 @@
             panel1.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -196,5 +247,9 @@
         private Button button3;
         private ToolStripButton toolStripButton2;
         private Label label1;
+        private Label label2;
+        private CheckBox checkBox1;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel toolStripStatusLabel1;
     }
 }

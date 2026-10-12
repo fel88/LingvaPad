@@ -39,8 +39,9 @@ namespace LingvaPad
             BuildTranslationsLookUp();
         }
 
-        private void BuildTranslationsLookUp()
+        public void BuildTranslationsLookUp()
         {
+            TranslationsLookUp.Clear();
             foreach (var item in Sentences)
             {
                 var tt = Pairs.Where(z => z.Source == item).ToArray();
@@ -52,6 +53,7 @@ namespace LingvaPad
                 TranslationsLookUp[item].AddRange(tt.Select(z => z.Source).ToList());
             }
         }
+        
 
         internal XElement ToXml()
         {

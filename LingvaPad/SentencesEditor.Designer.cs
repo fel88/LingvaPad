@@ -40,13 +40,15 @@
             addToolStripMenuItem = new ToolStripMenuItem();
             removeToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
+            copyToolStripMenuItem = new ToolStripMenuItem();
+            addPairToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
             toolStripDropDownButton1 = new ToolStripDropDownButton();
             readAloudToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1 = new TableLayoutPanel();
             textBox1 = new TextBox();
-            copyToolStripMenuItem = new ToolStripMenuItem();
+            columnHeader5 = new ColumnHeader();
             contextMenuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -65,7 +67,7 @@
             // 
             // listView1
             // 
-            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
+            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
             listView1.ContextMenuStrip = contextMenuStrip1;
             listView1.Dock = DockStyle.Fill;
             listView1.FullRowSelect = true;
@@ -98,15 +100,15 @@
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { addToolStripMenuItem, removeToolStripMenuItem, editToolStripMenuItem, copyToolStripMenuItem });
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { addToolStripMenuItem, removeToolStripMenuItem, editToolStripMenuItem, copyToolStripMenuItem, addPairToolStripMenuItem });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(181, 114);
+            contextMenuStrip1.Size = new Size(118, 114);
             // 
             // addToolStripMenuItem
             // 
             addToolStripMenuItem.Image = Properties.Resources.plus;
             addToolStripMenuItem.Name = "addToolStripMenuItem";
-            addToolStripMenuItem.Size = new Size(180, 22);
+            addToolStripMenuItem.Size = new Size(117, 22);
             addToolStripMenuItem.Text = "add";
             addToolStripMenuItem.Click += addToolStripMenuItem_Click;
             // 
@@ -114,7 +116,7 @@
             // 
             removeToolStripMenuItem.Image = Properties.Resources.cross;
             removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            removeToolStripMenuItem.Size = new Size(180, 22);
+            removeToolStripMenuItem.Size = new Size(117, 22);
             removeToolStripMenuItem.Text = "remove";
             removeToolStripMenuItem.Click += removeToolStripMenuItem_Click;
             // 
@@ -122,9 +124,24 @@
             // 
             editToolStripMenuItem.Image = Properties.Resources.pencil;
             editToolStripMenuItem.Name = "editToolStripMenuItem";
-            editToolStripMenuItem.Size = new Size(180, 22);
+            editToolStripMenuItem.Size = new Size(117, 22);
             editToolStripMenuItem.Text = "edit";
             editToolStripMenuItem.Click += editToolStripMenuItem_Click;
+            // 
+            // copyToolStripMenuItem
+            // 
+            copyToolStripMenuItem.Image = Properties.Resources.document_copy;
+            copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            copyToolStripMenuItem.Size = new Size(117, 22);
+            copyToolStripMenuItem.Text = "Copy";
+            copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
+            // 
+            // addPairToolStripMenuItem
+            // 
+            addPairToolStripMenuItem.Name = "addPairToolStripMenuItem";
+            addPairToolStripMenuItem.Size = new Size(117, 22);
+            addPairToolStripMenuItem.Text = "add pair";
+            addPairToolStripMenuItem.Click += addPairToolStripMenuItem_Click;
             // 
             // toolStrip1
             // 
@@ -186,13 +203,9 @@
             textBox1.TabIndex = 4;
             textBox1.TextChanged += textBox1_TextChanged;
             // 
-            // copyToolStripMenuItem
+            // columnHeader5
             // 
-            copyToolStripMenuItem.Image = Properties.Resources.document_copy;
-            copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            copyToolStripMenuItem.Size = new Size(180, 22);
-            copyToolStripMenuItem.Text = "Copy";
-            copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
+            columnHeader5.Text = "Pairs qty";
             // 
             // SentencesEditor
             // 
@@ -232,5 +245,7 @@
         private ToolStripDropDownButton toolStripDropDownButton1;
         private ToolStripMenuItem readAloudToolStripMenuItem;
         private ToolStripMenuItem copyToolStripMenuItem;
+        private ToolStripMenuItem addPairToolStripMenuItem;
+        private ColumnHeader columnHeader5;
     }
 }

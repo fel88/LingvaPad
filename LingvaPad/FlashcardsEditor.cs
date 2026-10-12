@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +39,7 @@ namespace LingvaPad
             }
 
 
-            Db.Instance.Flashcards.Add(new Flashcard() { Id = nextId, Image = Clipboard.GetImage() as Bitmap });
+            Db.Instance.Flashcards.Add(new Flashcard(nextId, Clipboard.GetImage() as Bitmap));
             UpdateList();
         }
 
@@ -48,6 +50,7 @@ namespace LingvaPad
 
             var fc = listView1.SelectedItems[0].Tag as Flashcard;
             pictureBox1.Image = fc.Image;
+            toolStripStatusLabel1.Text = $"{Math.Round((fc.Data.Length / 1024.0 / 1024.0), 2)}Mb";
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -81,6 +84,34 @@ namespace LingvaPad
 
             fc.Description = d.GetStringField("desc");
             UpdateList();
+        }
+
+        private void copyImageToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            var fc = listView1.SelectedItems[0].Tag as Flashcard;
+            Clipboard.SetImage(fc.Image);
+        }
+
+        private void resaveToJpegToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            var fc = listView1.SelectedItems[0].Tag as Flashcard;
+            var ms = new MemoryStream();
+            fc.Image.Save(ms, ImageFormat.Jpeg);            
+            var data = ms.ToArray();
+            var ratio = fc.Data.Length / (double)data.Length;
+            if (ratio > 1)
+            {
+                fc.Data = data;
+                fc.Image = Bitmap.FromStream(new MemoryStream(data)) as Bitmap;
+                pictureBox1.Image = fc.Image;
+            }
+
         }
     }
 }

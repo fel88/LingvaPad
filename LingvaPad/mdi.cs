@@ -124,13 +124,14 @@ namespace LingvaPad
         {
             TranslationsTrainer f = new TranslationsTrainer();
             var d = AutoDialog.DialogHelpers.StartDialog();
-            var allTags = Db.Instance.Pairs.SelectMany(z => z.Tags).GroupBy(z => z.Name).Select(z => z.Key).ToArray();
+            var grouped = Db.Instance.Pairs.SelectMany(z => z.Tags).GroupBy(z => z.Name).ToArray();
+            var allTags = grouped.Select(z => $"{z.Key} ({z.Count()})").ToArray();
             d.AddOptionsField("filter", "Filter", allTags.ToArray(), 0);
             if (!d.ShowDialog())
                 return;
 
-            var filter = d.GetOptionsField("filter");
-            f.InitByTag(filter);
+            var filterIdx = d.GetOptionsFieldIdx("filter");
+            f.InitByTag(grouped[filterIdx].Key);
 
             f.MdiParent = this;
             f.Show();

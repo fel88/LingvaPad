@@ -17,13 +17,14 @@ namespace LingvaPad
             var filterLow = filter.ToLower();
             foreach (var item in Db.Instance.Sentences)
             {
+                var pairsQty = Db.Instance.TranslationsLookUp[item].Count;
                 var tagsStr = item.Tags == null ? "" : string.Join(", ", item.Tags.Select(z => z.Name));
                 string[] stringsToSearch = [item.Text.ToLower(), tagsStr, item.Culture];
                 if (!string.IsNullOrEmpty(filter) && !stringsToSearch.Any(z => z.Contains(filterLow)))
                     continue;
 
                 listView1.Items.Add(new ListViewItem(new string[] {
-                    item.Id.ToString(), item.Text, item.Culture, tagsStr })
+                    item.Id.ToString(), item.Text, item.Culture, tagsStr, pairsQty.ToString() })
                 { Tag = item });
             }
         }
@@ -90,7 +91,7 @@ namespace LingvaPad
                 Culture = culture,
                 Id = nextId
             });
-
+            Db.Instance.BuildTranslationsLookUp();
             UpdateList();
         }
 
@@ -140,13 +141,57 @@ namespace LingvaPad
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            {
-                if (listView1.SelectedItems.Count == 0)
-                    return;
 
-                var trans = listView1.SelectedItems[0].Tag as Sentence;
-                Clipboard.SetText(trans.Text);
-            }
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            var trans = listView1.SelectedItems[0].Tag as Sentence;
+            Clipboard.SetText(trans.Text);
+
+        }
+
+        private void addPairToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            var trans = listView1.SelectedItems[0].Tag as Sentence;
+
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            d.Text = "Add pair sentence";
+            d.AddStringField("text", "Text");
+            d.AddOptionsField("culture", "Culture", ["ru", "en"], 0);
+
+            if (!d.ShowDialog())
+                return;
+
+            var text = d.GetStringField("text");
+            var culture = d.GetOptionsField("culture");
+            int nextId = 1;
+
+            if (Db.Instance.Sentences.Any())
+                nextId = Db.Instance.Sentences.Max(z => z.Id) + 1;
+
+            var stoAdd = new Sentence()
+            {
+                Text = text,
+                Culture = culture,
+                Id = nextId
+            };
+
+            Db.Instance.Sentences.Add(stoAdd);
+            
+
+
+            Db.Instance.Pairs.Add(new SentencePair()
+            {
+                Source = trans,
+                Target = stoAdd
+            });
+
+            Db.Instance.BuildTranslationsLookUp();
+            UpdateList();
+
         }
     }
 }

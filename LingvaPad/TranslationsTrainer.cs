@@ -30,6 +30,11 @@ namespace LingvaPad
                 Check();
                 return true;
             }
+            if (keyData == Keys.Right)
+            {
+                Next();
+                return true;
+            }
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -107,9 +112,22 @@ namespace LingvaPad
 
         private void button2_Click(object sender, EventArgs e)
         {
+            Next();
+        }
+
+        public void Next()
+        {
             showAnswer = false;
             wb.DocumentText = "";
-            questionIdx = r.Next(FilteredSentences.Length);
+            var oldIdx = questionIdx;
+            if (FilteredSentences.Length > 1)
+                do
+                {
+                    questionIdx = r.Next(FilteredSentences.Length);
+                } while (questionIdx == oldIdx);
+            var tags = Db.Instance.TranslationsLookUp[Question].SelectMany(z => z.Tags).ToList();
+            tags.AddRange(Question.Tags);
+            label2.Text = string.Join(", ", tags.Distinct().Select(z => z.Name));
             textBox1.Text = Question.Text;
             richTextBox3.Text = "";
             label1.Visible = false;
@@ -128,6 +146,7 @@ namespace LingvaPad
         {
             FilteredPairs = Db.Instance.Pairs.Where(z => z.Tags.Any(u => u.Name == tag)).ToArray();
             FilteredSentences = FilteredPairs.Select(z => z.Source).Distinct().ToArray();
+            toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
             questionIdx = r.Next(FilteredSentences.Length);
 
             textBox1.Text = Question.Text;
@@ -145,6 +164,7 @@ namespace LingvaPad
         {
             FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == culture).ToArray();
             questionIdx = r.Next(FilteredSentences.Length);
+            toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
 
             textBox1.Text = Question.Text;
 
@@ -156,6 +176,12 @@ namespace LingvaPad
             tableLayoutPanel1.Controls.Add(wb, 0, 1);
             wb.Dock = DockStyle.Fill;
 
+        }
+        bool showTags = false;
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            showTags = checkBox1.Checked;
+            label2.Visible = showTags;
         }
     }
 }

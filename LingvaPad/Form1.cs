@@ -109,7 +109,7 @@ namespace LingvaPad
                 Target = sentence2,
                 Tags = tagsStr.Select(z => new Tag() { Name = z }).ToArray()
             });
-
+            Db.Instance.BuildTranslationsLookUp();
 
             UpdateList();
         }

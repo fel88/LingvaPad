@@ -8,18 +8,29 @@ namespace LingvaPad
     public class Flashcard
     {
         public Flashcard() { }
+        public Flashcard(int id, Image image)
+        {
+            Id = id;
+            using MemoryStream ms = new MemoryStream();
+            image.Save(ms, ImageFormat.Jpeg);
+            Data = ms.ToArray();
+            using var ms2 = new MemoryStream(Data);
+            Image = Bitmap.FromStream(ms2) as Bitmap;
+        }
+
         public Flashcard(XElement elem, XmlSerializeDataContext dataContext)
         {
             Id = int.Parse(elem.Attribute("id").Value);
             Description = elem.Element("desc").Value;
             var b64 = Convert.FromBase64String(elem.Element("data").Value);
+            Data = b64;
             var ms = new MemoryStream(b64);
             Image = Bitmap.FromStream(ms) as Bitmap;
-
         }
 
         public int Id;
         public string Description;//like movie
+        public byte[] Data;
         public Bitmap Image;
         public Tag[] Tags;
 
@@ -27,9 +38,8 @@ namespace LingvaPad
         {
             XElement ret = new XElement("flashcard");
             ret.Add(new XAttribute("id", Id));
-            MemoryStream ms = new MemoryStream();
-            Image.Save(ms, ImageFormat.Png);
-            var b64 = Convert.ToBase64String(ms.ToArray());
+
+            var b64 = Convert.ToBase64String(Data);
             ret.Add(new XElement("data", new XCData(b64)));
             ret.Add(new XElement("desc", new XCData(Description ?? string.Empty)));
             XElement tags = new XElement("tags");
