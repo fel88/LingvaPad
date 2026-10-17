@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Catalyst;
+using Catalyst.Models;
+using Mosaik.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Media.Animation;
@@ -20,6 +25,15 @@ namespace LingvaPad
         public mdi()
         {
             InitializeComponent();
+            Shown += Mdi_Shown;
+
+
+
+        }
+
+        private async void Mdi_Shown(object? sender, EventArgs e)
+        {
+
 
 
         }
@@ -84,7 +98,7 @@ namespace LingvaPad
                 return;
 
             lastOpenedPath = path;
-            Open(path);            
+            Open(path);
         }
 
         private void Open(string path)
@@ -171,6 +185,21 @@ namespace LingvaPad
             f.Show();
         }
 
-              
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!GuiHelpers.ShowQuestion($"Are you sure to save:  {lastOpenedPath}?"))
+                return;
+
+            var xml = Db.Instance.ToXml();
+            File.WriteAllText(lastOpenedPath, xml.ToString());
+        }
+
+        private void byTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FillBlanks fb = new FillBlanks();
+            fb.Init(Clipboard.GetText());
+            fb.MdiParent = this;
+            fb.Show();
+        }
     }
 }

@@ -1,3 +1,6 @@
+﻿using Catalyst;
+using Mosaik.Core;
+
 namespace LingvaPad
 {
     internal static class Program
@@ -11,6 +14,7 @@ namespace LingvaPad
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
             Application.Run(new mdi());
         }
     }
