@@ -30,7 +30,8 @@ namespace LingvaPad
             {
                 Stream.Write(e.Buffer, 0, e.BytesRecorded);
 
-              
+
+                if (STTStream == null)
                     return;
 
                 MemoryStream ms = new MemoryStream();

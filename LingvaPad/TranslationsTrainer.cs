@@ -374,5 +374,18 @@ namespace LingvaPad
             richTextBox3.Text = res;
             Check();
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            
+            var data = rec.Stream.ToArray();
+
+            IWaveProvider provider = new RawSourceWaveStream(
+                                     new MemoryStream(data), rec.WaveFormat);
+
+            WaveOut waveOut = new WaveOut();
+            waveOut.Init(provider);
+            waveOut.Play();
+        }
     }
 }

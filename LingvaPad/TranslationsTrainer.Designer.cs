@@ -35,6 +35,7 @@
             pictureBox1 = new PictureBox();
             richTextBox3 = new RichTextBox();
             panel1 = new Panel();
+            button6 = new Button();
             button5 = new Button();
             button4 = new Button();
             radioButton2 = new RadioButton();
@@ -110,6 +111,7 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(button6);
             panel1.Controls.Add(button5);
             panel1.Controls.Add(button4);
             panel1.Controls.Add(radioButton2);
@@ -124,6 +126,18 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(794, 94);
             panel1.TabIndex = 3;
+            // 
+            // button6
+            // 
+            button6.Image = Properties.Resources.speaker;
+            button6.ImageAlign = ContentAlignment.MiddleLeft;
+            button6.Location = new Point(615, 42);
+            button6.Name = "button6";
+            button6.Size = new Size(82, 44);
+            button6.TabIndex = 10;
+            button6.Text = "Play";
+            button6.UseVisualStyleBackColor = true;
+            button6.Click += button6_Click;
             // 
             // button5
             // 
@@ -154,7 +168,7 @@
             // 
             radioButton2.Appearance = Appearance.Button;
             radioButton2.AutoSize = true;
-            radioButton2.Location = new Point(583, 42);
+            radioButton2.Location = new Point(543, 42);
             radioButton2.Name = "radioButton2";
             radioButton2.Size = new Size(66, 25);
             radioButton2.TabIndex = 7;
@@ -167,7 +181,7 @@
             // 
             radioButton1.Appearance = Appearance.Button;
             radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(527, 42);
+            radioButton1.Location = new Point(487, 42);
             radioButton1.Name = "radioButton1";
             radioButton1.Size = new Size(50, 25);
             radioButton1.TabIndex = 6;
@@ -350,5 +364,6 @@
         private System.Windows.Forms.Timer timer1;
         private Button button4;
         private Button button5;
+        private Button button6;
     }
 }

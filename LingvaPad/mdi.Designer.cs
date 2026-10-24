@@ -51,11 +51,12 @@
             sentencesToolStripMenuItem = new ToolStripMenuItem();
             flashcardsToolStripMenuItem = new ToolStripMenuItem();
             toolStripButton1 = new ToolStripButton();
+            toolStripButton2 = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             toolStripStatusLabel3 = new ToolStripStatusLabel();
-            toolStripButton2 = new ToolStripButton();
+            freeSpeechToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             SuspendLayout();
@@ -112,7 +113,7 @@
             // 
             // toolStripDropDownButton1
             // 
-            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { translationsToolStripMenuItem, diagramsToolStripMenuItem, quizToolStripMenuItem, simpleRepeatAloudToolStripMenuItem, fillBlankToolStripMenuItem, translateAloudToolStripMenuItem, flashcardsToolStripMenuItem1, customPairsToolStripMenuItem });
+            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { translationsToolStripMenuItem, diagramsToolStripMenuItem, quizToolStripMenuItem, simpleRepeatAloudToolStripMenuItem, fillBlankToolStripMenuItem, translateAloudToolStripMenuItem, flashcardsToolStripMenuItem1, customPairsToolStripMenuItem, freeSpeechToolStripMenuItem });
             toolStripDropDownButton1.Image = (Image)resources.GetObject("toolStripDropDownButton1.Image");
             toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -122,27 +123,27 @@
             // translationsToolStripMenuItem
             // 
             translationsToolStripMenuItem.Name = "translationsToolStripMenuItem";
-            translationsToolStripMenuItem.Size = new Size(152, 22);
+            translationsToolStripMenuItem.Size = new Size(180, 22);
             translationsToolStripMenuItem.Text = "translations";
             translationsToolStripMenuItem.Click += translationsToolStripMenuItem_Click;
             // 
             // diagramsToolStripMenuItem
             // 
             diagramsToolStripMenuItem.Name = "diagramsToolStripMenuItem";
-            diagramsToolStripMenuItem.Size = new Size(152, 22);
+            diagramsToolStripMenuItem.Size = new Size(180, 22);
             diagramsToolStripMenuItem.Text = "diagrams";
             // 
             // quizToolStripMenuItem
             // 
             quizToolStripMenuItem.Name = "quizToolStripMenuItem";
-            quizToolStripMenuItem.Size = new Size(152, 22);
+            quizToolStripMenuItem.Size = new Size(180, 22);
             quizToolStripMenuItem.Text = "quiz";
             quizToolStripMenuItem.Click += quizToolStripMenuItem_Click;
             // 
             // simpleRepeatAloudToolStripMenuItem
             // 
             simpleRepeatAloudToolStripMenuItem.Name = "simpleRepeatAloudToolStripMenuItem";
-            simpleRepeatAloudToolStripMenuItem.Size = new Size(152, 22);
+            simpleRepeatAloudToolStripMenuItem.Size = new Size(180, 22);
             simpleRepeatAloudToolStripMenuItem.Text = "repeat aloud";
             simpleRepeatAloudToolStripMenuItem.Click += simpleRepeatAloudToolStripMenuItem_Click;
             // 
@@ -150,7 +151,7 @@
             // 
             fillBlankToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { seToolStripMenuItem, byTextToolStripMenuItem });
             fillBlankToolStripMenuItem.Name = "fillBlankToolStripMenuItem";
-            fillBlankToolStripMenuItem.Size = new Size(152, 22);
+            fillBlankToolStripMenuItem.Size = new Size(180, 22);
             fillBlankToolStripMenuItem.Text = "fill blank";
             fillBlankToolStripMenuItem.Click += fillBlankToolStripMenuItem_Click;
             // 
@@ -170,21 +171,21 @@
             // translateAloudToolStripMenuItem
             // 
             translateAloudToolStripMenuItem.Name = "translateAloudToolStripMenuItem";
-            translateAloudToolStripMenuItem.Size = new Size(152, 22);
+            translateAloudToolStripMenuItem.Size = new Size(180, 22);
             translateAloudToolStripMenuItem.Text = "translate aloud";
             translateAloudToolStripMenuItem.Click += translateAloudToolStripMenuItem_Click;
             // 
             // flashcardsToolStripMenuItem1
             // 
             flashcardsToolStripMenuItem1.Name = "flashcardsToolStripMenuItem1";
-            flashcardsToolStripMenuItem1.Size = new Size(152, 22);
+            flashcardsToolStripMenuItem1.Size = new Size(180, 22);
             flashcardsToolStripMenuItem1.Text = "flashcards";
             flashcardsToolStripMenuItem1.Click += flashcardsToolStripMenuItem1_Click;
             // 
             // customPairsToolStripMenuItem
             // 
             customPairsToolStripMenuItem.Name = "customPairsToolStripMenuItem";
-            customPairsToolStripMenuItem.Size = new Size(152, 22);
+            customPairsToolStripMenuItem.Size = new Size(180, 22);
             customPairsToolStripMenuItem.Text = "custom pairs";
             customPairsToolStripMenuItem.Click += customPairsToolStripMenuItem_Click;
             // 
@@ -226,6 +227,16 @@
             toolStripButton1.Size = new Size(68, 22);
             toolStripButton1.Text = "Statistic";
             // 
+            // toolStripButton2
+            // 
+            toolStripButton2.Alignment = ToolStripItemAlignment.Right;
+            toolStripButton2.Image = Properties.Resources.wrench_screwdriver;
+            toolStripButton2.ImageTransparentColor = Color.Magenta;
+            toolStripButton2.Name = "toolStripButton2";
+            toolStripButton2.Size = new Size(63, 22);
+            toolStripButton2.Text = "Config";
+            toolStripButton2.Click += toolStripButton2_Click;
+            // 
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabel2, toolStripStatusLabel3 });
@@ -252,15 +263,12 @@
             toolStripStatusLabel3.Size = new Size(13, 17);
             toolStripStatusLabel3.Text = "..";
             // 
-            // toolStripButton2
+            // freeSpeechToolStripMenuItem
             // 
-            toolStripButton2.Alignment = ToolStripItemAlignment.Right;
-            toolStripButton2.Image = Properties.Resources.wrench_screwdriver;
-            toolStripButton2.ImageTransparentColor = Color.Magenta;
-            toolStripButton2.Name = "toolStripButton2";
-            toolStripButton2.Size = new Size(63, 22);
-            toolStripButton2.Text = "Config";
-            toolStripButton2.Click += toolStripButton2_Click;
+            freeSpeechToolStripMenuItem.Name = "freeSpeechToolStripMenuItem";
+            freeSpeechToolStripMenuItem.Size = new Size(180, 22);
+            freeSpeechToolStripMenuItem.Text = "free speech";
+            freeSpeechToolStripMenuItem.Click += freeSpeechToolStripMenuItem_Click;
             // 
             // mdi
             // 
@@ -311,5 +319,6 @@
         private ToolStripMenuItem seToolStripMenuItem;
         private ToolStripMenuItem byTextToolStripMenuItem;
         private ToolStripButton toolStripButton2;
+        private ToolStripMenuItem freeSpeechToolStripMenuItem;
     }
 }

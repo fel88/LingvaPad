@@ -247,5 +247,12 @@ namespace LingvaPad
             Configs.RuntimeTranscribing = d.GetBoolField("runtimeTranscribing");
             SaveConfig();
         }
+
+        private void freeSpeechToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FreeSpeech f = new FreeSpeech();
+            f.MdiParent = this;
+            f.Show();
+        }
     }
 }
