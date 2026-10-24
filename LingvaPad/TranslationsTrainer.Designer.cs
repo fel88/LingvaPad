@@ -35,6 +35,8 @@
             pictureBox1 = new PictureBox();
             richTextBox3 = new RichTextBox();
             panel1 = new Panel();
+            button5 = new Button();
+            button4 = new Button();
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
             label2 = new Label();
@@ -108,6 +110,8 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(button5);
+            panel1.Controls.Add(button4);
             panel1.Controls.Add(radioButton2);
             panel1.Controls.Add(radioButton1);
             panel1.Controls.Add(label2);
@@ -120,6 +124,31 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(794, 94);
             panel1.TabIndex = 3;
+            // 
+            // button5
+            // 
+            button5.Image = Properties.Resources.control_stop_square;
+            button5.ImageAlign = ContentAlignment.MiddleLeft;
+            button5.Location = new Point(703, 42);
+            button5.Name = "button5";
+            button5.Size = new Size(82, 44);
+            button5.TabIndex = 9;
+            button5.Text = "Stop";
+            button5.UseVisualStyleBackColor = true;
+            button5.Visible = false;
+            button5.Click += button5_Click;
+            // 
+            // button4
+            // 
+            button4.Image = Properties.Resources.microphone;
+            button4.ImageAlign = ContentAlignment.MiddleLeft;
+            button4.Location = new Point(703, 42);
+            button4.Name = "button4";
+            button4.Size = new Size(82, 44);
+            button4.TabIndex = 8;
+            button4.Text = "Record";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // radioButton2
             // 
@@ -319,5 +348,7 @@
         private RadioButton radioButton2;
         private RadioButton radioButton1;
         private System.Windows.Forms.Timer timer1;
+        private Button button4;
+        private Button button5;
     }
 }

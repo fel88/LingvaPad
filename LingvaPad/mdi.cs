@@ -26,9 +26,7 @@ namespace LingvaPad
         {
             InitializeComponent();
             Shown += Mdi_Shown;
-
-
-
+            LoadConfig();
         }
 
         private async void Mdi_Shown(object? sender, EventArgs e)
@@ -200,6 +198,54 @@ namespace LingvaPad
             fb.Init(Clipboard.GetText());
             fb.MdiParent = this;
             fb.Show();
+        }
+        public void LoadConfig()
+        {
+            if (!File.Exists("config.xml"))
+                return;
+
+            var doc = XDocument.Load("config.xml");
+            foreach (var item in doc.Descendants("setting"))
+            {
+                var name = item.Attribute("name").Value;
+                switch (name)
+                {
+                    case "ggufPath":
+                        Configs.GGUFPath = item.Value;
+                        break;
+                    case "autoTranscribing":
+                        Configs.AutoTranscribing = bool.Parse(item.Value);
+                        break;
+                    case "runtimeTranscribing":
+                        Configs.RuntimeTranscribing = bool.Parse(item.Value);
+                        break;
+                }
+            }
+        }
+
+        public void SaveConfig()
+        {
+            XElement root = new XElement("root");
+            root.Add(new XElement("setting", new XAttribute("name", "ggufPath"), new XCData(Configs.GGUFPath)));
+            root.Add(new XElement("setting", new XAttribute("name", "autoTranscribing"), Configs.AutoTranscribing));
+            root.Add(new XElement("setting", new XAttribute("name", "runtimeTranscribing"), Configs.RuntimeTranscribing));
+            File.WriteAllText("config.xml", root.ToString());
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            d.AddStringField("ggufPath", "GGUF path", Configs.GGUFPath);
+            d.AddBoolField("transcribeEnabled", "Auto transcribing", Configs.AutoTranscribing);
+            d.AddBoolField("runtimeTranscribing", "Runtime transcribing", Configs.RuntimeTranscribing);
+
+            if (!d.ShowDialog())
+                return;
+
+            Configs.GGUFPath = d.GetStringField("ggufPath");
+            Configs.AutoTranscribing = d.GetBoolField("transcribeEnabled");
+            Configs.RuntimeTranscribing = d.GetBoolField("runtimeTranscribing");
+            SaveConfig();
         }
     }
 }

@@ -1,15 +1,21 @@
 ﻿using AutoDialog.Extensions;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using TranscribeCppSharp;
+using TranscribeCppSharp.Audio;
+using TranscribeCppSharp.Cli;
 using static System.Net.Mime.MediaTypeNames;
 using Font = System.Drawing.Font;
 
@@ -26,7 +32,7 @@ namespace LingvaPad
         }
         bool wasDown = false;
 
-        Point downLocation;
+        System.Drawing.Point downLocation;
         private void PictureBox1_MouseDown(object? sender, MouseEventArgs e)
 
         {
@@ -205,7 +211,7 @@ namespace LingvaPad
         }
 
         void ShowNext()
-        {            
+        {
             var oldIdx = questionIdx;
             if (FilteredSentences.Length > 1)
                 do
@@ -220,7 +226,7 @@ namespace LingvaPad
         {
             showAnswer = false;
             wb.DocumentText = "";
-         
+
             ShowNext();
             constructed.Clear();
 
@@ -248,7 +254,7 @@ namespace LingvaPad
             FilteredSentences = FilteredPairs.Select(z => z.Source).Distinct().ToArray();
             toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
             ShowNext();
-                        
+
 
             textBox1.Text = Question.Text;
 
@@ -266,7 +272,7 @@ namespace LingvaPad
             FilteredSentences = Db.Instance.Sentences.Where(z => z.Culture == culture).ToArray();
             FilteredSentences = FilteredSentences.Where(z => Db.Instance.Pairs.Any(u => (u.Target.Culture == targetCulture && u.Source == z) || (u.Target == z && u.Source.Culture == targetCulture))).ToArray();
 
-            
+
             ShowNext();
 
             toolStripStatusLabel1.Text = $"Sentences: {FilteredSentences.Length}";
@@ -308,6 +314,65 @@ namespace LingvaPad
         {
             pictureBox1.Invalidate();
 
+        }
+        StreamSTTMicrophoneRecorder rec = new StreamSTTMicrophoneRecorder();
+
+        Session RuntimeSession;
+        Model model;
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            button5.Visible = true;
+            button4.Visible = false;
+
+            if (Configs.RuntimeTranscribing)
+            {
+                if (model == null)
+                {
+                    model = TranscribeCommand.LoadModel(Configs.GGUFPath);
+                }
+                RuntimeSession = model.CreateSession();
+                rec.STTStream = RuntimeSession.CreateStream();
+                rec.STTStream.Begin();
+            }
+
+            toolStripStatusLabel1.Text = "Recording...";
+            rec.TextChanged = () =>
+            {
+
+                toolStripStatusLabel1.Text = "Current transcription: " + rec.CurrentText;
+            };
+
+            rec.StartRecording();
+        }
+        static async Task<string> DecodeRawWav(byte[] data, WaveFormat format)
+        {
+            MemoryStream ms = new MemoryStream();
+            using (WaveFileWriter writer = new WaveFileWriter(ms, format))
+            {
+                writer.Write(data, 0, data.Length);
+            }
+
+            return await Task.Run(() =>
+            {
+                return TranscribeCommand.DecodeWavFile(Configs.GGUFPath, WavPcmSource.TryOpen(ms.ToArray()));
+            });
+
+        }
+
+        private async void button5_Click(object sender, EventArgs e)
+        {
+            button5.Visible = false;
+            button4.Visible = true;
+            toolStripStatusLabel1.Text = "Stopped";
+            rec.StopRecording();
+            string res = string.Empty;
+
+            var data = rec.Stream.ToArray();
+            res = await DecodeRawWav(data, rec.WaveFormat);
+
+            richTextBox3.Text = res;
+            Check();
         }
     }
 }

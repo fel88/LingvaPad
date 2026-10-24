@@ -76,6 +76,12 @@
     <PackageReference Include="Catalyst" Version="26.10.6514" />
     <PackageReference Include="Catalyst.Models.English" Version="26.9.5316" />
     <PackageReference Include="Dagre.NET" Version="1.0.0.6" />
+    <PackageReference Include="NAudio" Version="3.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ParakeetLib\ParakeetLib.csproj" />
+    <ProjectReference Include="..\TranscribeCppSharp\TranscribeCppSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
