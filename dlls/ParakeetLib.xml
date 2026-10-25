@@ -1,0 +1,762 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ParakeetLib</name>
+    </assembly>
+    <members>
+        <member name="T:TranscribeCppSharp.Cli.TranscriptFormat">
+            <summary>Transcript file format selected by --format.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscriptFormat.Plain">
+            <summary>Header comments + timestamped lines (the default).</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscriptFormat.Vtt">
+            <summary>WebVTT cues, each with a speaker cue.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscriptFormat.Json">
+            <summary>Whisper-style JSON: language, full text, segments.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscriptFormat.Html">
+            <summary>Standalone HTML: numbered paragraphs, timestamps, speakers.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscriptFormat.Srt">
+            <summary>SubRip subtitles: numbered cues, <c>HH:MM:SS,mmm</c>.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscriptFormat.Ass">
+            <summary>Advanced SubStation Alpha: one script with a Default style.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.TranscriptLine">
+            <summary>One transcript line, with its position on the original timeline.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptLine.#ctor(System.Double,System.Double,System.Int32,System.String)">
+            <summary>One transcript line, with its position on the original timeline.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.CliOptions">
+            <summary>Every option of one run, validated. See <see cref="M:TranscribeCppSharp.Cli.CliOptions.TryParse(System.String[],TranscribeCppSharp.Cli.CliOptions@,System.String@)"/>.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.CliOptions.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.CliOptions.DefaultModel">
+            <summary>Default model alias: the diarization model (see --list-models).</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.CliOptions.DefaultLanguage">
+            <summary>Default decoder language, overridable with --lang.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.CliOptions.DefaultChunkSeconds">
+            <summary>Default window length in seconds, overridable with --chunk.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.AudioPath">
+            <summary>Absolute path of the input audio.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.ModelSpec">
+            <summary>Model as given: a file path, a curated alias or a HuggingFace spec.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.Quant">
+            <summary>--quant, or null for the alias' own quantization.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.Language">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.ChunkSeconds">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.Diarize">
+            <summary>--no-diarize turns attribution off; otherwise it is requested.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.VadSpec">
+            <summary>
+            --vad: a VAD model used to skip non-speech before transcription, as given
+            (path, alias or HuggingFace spec). Null means the whole file is windowed.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.OutPath">
+            <summary>Absolute path of the --out file, or null to print only.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.Format">
+            <summary>
+            /
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.Allowed">
+            <summary>
+            --allowed: language codes a language-identification model may answer with,
+            or null to let it rank every label. Ignored by the other roles.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.Backend">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.BackendName">
+            <summary>--backend as typed, for the error messages.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.DeviceIndex">
+            <summary>--device index, or null to let the backend choose.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.CliOptions.WritesFile">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.CliOptions.TryParse(System.String[],TranscribeCppSharp.Cli.CliOptions@,System.String@)">
+            <summary>
+            Parses the arguments. <paramref name="args"/> must not contain the flags
+            handled before parsing (--help, --list-models, --model-info,
+            --list-devices).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.CliOptions.ValueAfter(System.String[],System.String)">
+            <summary>
+            The value that follows a flag, or null when there is none. Used for the
+            flags answered before parsing (--model-info); the flags handled by
+            <see cref="M:TranscribeCppSharp.Cli.CliOptions.TryParse(System.String[],TranscribeCppSharp.Cli.CliOptions@,System.String@)"/> consume their value as they walk the arguments.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.CliOptions.TakeValue(System.String[],System.Int32@,System.String,System.String@,System.String@)">
+            <summary>Reads the value that follows a flag, if there is one.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.CliOptions.TryParseAllowed(System.String,System.String[]@,System.String@)">
+            <summary>
+            Parses --allowed (a comma-separated list of language codes) for the langid
+            role. A missing or empty entry is reported rather than silently dropped.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.DeviceChoice">
+            <summary>Compute choice resolved from the CLI flags, ready for Model.Load.</summary>
+            <param name="Backend">Backend request to pass to the load params.</param>
+            <param name="Device">Exact device, or null to let the backend decide.</param>
+            <param name="Request">Short description of what was requested, for the console.</param>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceChoice.#ctor(TranscribeCppSharp.Interop.BackendRequest,TranscribeCppSharp.BackendDevice,System.String)">
+            <summary>Compute choice resolved from the CLI flags, ready for Model.Load.</summary>
+            <param name="Backend">Backend request to pass to the load params.</param>
+            <param name="Device">Exact device, or null to let the backend decide.</param>
+            <param name="Request">Short description of what was requested, for the console.</param>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.DeviceChoice.Backend">
+            <summary>Backend request to pass to the load params.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.DeviceChoice.Device">
+            <summary>Exact device, or null to let the backend decide.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Cli.DeviceChoice.Request">
+            <summary>Short description of what was requested, for the console.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.DeviceSelection.BackendChoices">
+            <summary>Accepted --backend values, in --help order.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceSelection.TryParseBackend(System.String,TranscribeCppSharp.Interop.BackendRequest@,System.String@)">
+            <summary>
+            Parses --backend. A null or empty value means auto, the documented
+            upstream default.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceSelection.RequiredKind(TranscribeCppSharp.Interop.BackendRequest)">
+            <summary>
+            The device kind an explicit backend requires, or null for AUTO (where
+            the backend follows the device). Host-memory accelerators report kind
+            "accel" and, per the header, cannot be selected as a primary device.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceSelection.Name(TranscribeCppSharp.Interop.BackendRequest)">
+            <summary>The CLI spelling of a backend, as accepted by --backend.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceSelection.Resolve(System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.BackendDevice},TranscribeCppSharp.Interop.BackendRequest,System.Nullable{System.Int32},System.String@)">
+            <summary>
+            Resolves --device N against the enumerated devices and checks it against
+            a forced --backend. Whether a forced backend exists at all is a native
+            question (Backends.BackendAvailable) and is deliberately not decided
+            here.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceSelection.FormatDevices(System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.BackendDevice})">
+            <summary>Device table for --list-devices and for error messages.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.DeviceSelection.Describe(TranscribeCppSharp.BackendDevice)">
+            <summary>Short device label: the human description, else the raw name.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.Fmt.Ts(System.Double)">
+            <summary>Console timestamp: 00:10.5, or 1:02:03.4 once past an hour.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.Fmt.Dur(System.Double)">
+            <summary>Console duration: 00:11, or 1:02:03 once past an hour.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.Fmt.VttTs(System.Double)">
+            <summary>WebVTT cue timestamp: 00:00:10.500 (always HH:MM:SS.mmm).</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.Fmt.DiarizeState(TranscribeCppSharp.Interop.DiarizeMode)">
+            <summary>Human-readable diarization state, as printed and exported.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.Fmt.Normalize(System.String)">
+            <summary>Collapses whitespace runs, so one segment stays one line.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.Fmt.Samples(System.Int64)">
+            <summary>Lines in a number, for the "audio : 176 000 samples" report.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.TempAudioFile">
+             <summary>
+             Owns the temporary file that holds the decoded audio when ffmpeg has to
+             convert it, and makes sure it does not outlive the run.
+             </summary>
+             <remarks>
+             Decoding goes through a file rather than a pipe because a pipe carries no
+             length: reading one means buffering the entire stream before its size is
+             known, which measured 610 MiB of resident memory for 30 minutes of audio
+             against 263 MiB for the file. The file is 4 bytes per 16 kHz sample, so
+             219.7 MiB per hour of audio, and it exists for the whole run.
+            
+             Three endings have to be covered, and they are not the same case:
+            
+             <list type="bullet">
+             <item>Normal exit and Ctrl+C: the <c>using</c> in the command disposes the
+             source and the file goes. Verified.</item>
+             <item>SIGTERM and SIGHUP — what <c>docker stop</c>, systemd and CI send — do
+             not unwind the stack, so the <c>using</c> never runs. <see cref="M:TranscribeCppSharp.Cli.TempAudioFile.Sweep"/>
+             plus the ProcessExit hook covers those.</item>
+             <item>SIGKILL, an OOM kill or a power cut cannot be handled from inside the
+             process at all. Only the next run can clean those up, which is what
+             <see cref="M:TranscribeCppSharp.Cli.TempAudioFile.Sweep"/> is for.</item>
+             </list>
+             </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TempAudioFile.Prefix">
+            <summary>Prefix every staging file carries, so leftovers are identifiable.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TempAudioFile.OpenForReading(System.String)">
+             <summary>
+             Opens a staging file for reading and, on Unix, immediately removes its
+             name from the directory.
+             </summary>
+             <remarks>
+             After this call the data stays reachable through the returned handle, but
+             the directory has no entry for it, so **nothing is left behind even if the
+             process is killed outright**. That is the part a <c>try/finally</c> and a
+             signal handler cannot do: SIGKILL, an OOM kill and a power cut run no
+             cleanup code at all, and on Windows an unlink of an open file is not
+             possible either.
+            
+             The exposure that remains is the window between ffmpeg finishing the write
+             and this call opening the file — on a long input that is the decode phase,
+             so it is not negligible. It is a much smaller window than before, where
+             the file stayed named for the whole transcription, but it is not zero.
+            
+             On Windows the file keeps its name and is removed by <see cref="M:TranscribeCppSharp.Cli.TempAudioFile.TryDelete(System.String)"/>
+             on a normal or signalled exit, with <see cref="M:TranscribeCppSharp.Cli.TempAudioFile.Sweep"/> covering the rest.
+             </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TempAudioFile.NewPath">
+            <summary>
+            A new path in the system temp directory for this process's run.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TempAudioFile.Sweep">
+             <summary>
+             Removes staging files abandoned by an earlier run that could not clean up
+             after itself. Best effort: anything that cannot be removed is left alone.
+             </summary>
+             <remarks>
+             Decided from the process id in the file name, which is there for this: a
+             file whose owning process is gone belongs to a run that died and can be
+             removed now, however recent. That is the case a timeout cannot serve — a
+             24-hour threshold means a crash's debris sits for a day.
+            
+             The lock is a second, independent signal, because process ids get reused:
+             a file that cannot be opened exclusively is being read by a live run and is
+             never touched, whatever the id says.
+            
+             The one window neither signal closes is a decode in progress: between
+             ffmpeg finishing the write and this run opening the file, it is named but
+             unlocked, and the owning process is alive, so the id check protects it. A
+             run that is alive but whose id was reused, after a crash, is the residual
+             false negative, and it is left for a human — the alternative is deleting a
+             live run's audio.
+             </remarks>
+             <returns>How many files were removed.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TempAudioFile.IsOwnerAlive(System.String)">
+            <summary>
+            Whether the process id in the staging file's name is still running.
+            </summary>
+            <remarks>
+            "Cannot tell" answers as alive, so an inconclusive check keeps the file.
+            The error to avoid is deleting a concurrent run's audio; the cost of the
+            other mistake is one file a human can remove.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TempAudioFile.RegisterCleanup(System.String)">
+            <summary>
+            Registers a hook that deletes <paramref name="path"/> when the process
+            ends, including on the signals that do not unwind the stack.
+            </summary>
+            <remarks>
+            Only the most recent staging file is tracked, so a process that decodes
+            more than once input does not accumulate handlers. This is the belt to
+            <see cref="M:TranscribeCppSharp.Cli.TempAudioFile.Sweep"/>'s braces: it cannot help a process that never gets to
+            run its exit path at all, which is why both exist.
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TempAudioFile.Handled">
+            <summary>
+            The signals this class handles, with their POSIX numbers.
+            </summary>
+            <remarks>
+            The numbers are written out rather than taken from
+            <see cref="T:System.Runtime.InteropServices.PosixSignal"/>, whose members are not POSIX signal numbers:
+            on this runtime SIGTERM is -4, SIGINT is -2 and SIGHUP is -1, so
+            <c>128 + (int)signal</c> produced 124 instead of the 143 a shell reports.
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.TranscribeCommand">
+            <summary>
+            fghfgh
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Cli.TranscribeCommand.ToolName">
+            <summary>The name the tool is installed as.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.PrintUpstreamCatalog(System.String,System.IO.TextWriter)">
+            <summary>
+            Prints what upstream's pinned catalog adds to what the manifest already said.
+            </summary>
+            <remarks>
+            Its own section rather than more lines in <c>ModelStore.Info</c>, because
+            the wrapper has no access to the catalog — it is embedded in this executable
+            alone, deliberately, so the library never carries data only the two front
+            ends display. Everything below is transcribe.cpp's own record: their
+            published quantizations, their capability flags, their measurement. This
+            project measures none of it, so the section says whose it is.
+            <para>
+            Nothing is printed when upstream has no record for the alias, and no
+            placeholder stands in for one: an absent record is an absent record.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.Run(System.String[],System.IO.TextWriter,System.IO.TextWriter)">
+            <summary>
+            Runs one command. Returns the process exit code: 0 on success, 1 on a
+            reported error (a message on stderr, never a stack trace).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.DecodeWavFile(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="modelPath2"></param>
+            <param name="wavPath"></param>
+            <returns></returns>
+            <exception cref="T:TranscribeCppSharp.Cli.TranscribeCommand.ParakeetException"></exception>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.TranscribeCommand.ParakeetException">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.ParakeetException.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.ParakeetException.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.PlanFromSpeech(System.IO.TextWriter,System.IO.TextWriter,TranscribeCppSharp.Cli.CliOptions,TranscribeCppSharp.Cli.DeviceChoice,TranscribeCppSharp.Audio.PcmSource,System.Int64,System.Int32,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.Audio.AudioWindow}@)">
+            <summary>
+            Runs the --vad model over the file and plans windows from the speech it
+            found. Returns 0 on success, or the exit code the run should use.
+            </summary>
+            <remarks>
+            Opt-in on purpose. Transcribing only the speech regions changes what the
+            model sees (no context across a pause), so the text can differ from the
+            normal path; the flag is documented as unmeasured rather than sold as an
+            improvement.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.RunNonAsrRole(System.IO.TextWriter,System.IO.TextWriter,TranscribeCppSharp.Cli.CliOptions,TranscribeCppSharp.Model,System.String,TranscribeCppSharp.Audio.PcmSource,System.Int64,TranscribeCppSharp.TranscribeRole)">
+            <summary>
+            Runs a model that does not serve ASR, through the session its role names.
+            The audio is read whole (these roles are offline and have no windowing
+            contract); the ASR path is the one that streams windows.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.WriteRoleReport(TranscribeCppSharp.Cli.CliOptions,System.IO.TextWriter,System.Action{System.IO.TextWriter})">
+            <summary>Writes the role report to --out, reusing the console writer when there is none.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscribeCommand.FormatName(TranscribeCppSharp.Cli.TranscriptFormat)">
+            <summary>The --format spelling, as accepted and as echoed back.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Cli.TranscriptInfo">
+            <summary>
+            What every format says about the run: where the audio came from, which model
+            decoded it and when. Passed once to the header and once to the footer instead
+            of a growing argument list, so the HTML document and the plain header cannot
+            disagree about the same run.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptInfo.#ctor(System.String,System.TimeSpan,System.String,System.String,TranscribeCppSharp.Interop.DiarizeMode,System.Int32,System.DateTime)">
+            <summary>
+            What every format says about the run: where the audio came from, which model
+            decoded it and when. Passed once to the header and once to the footer instead
+            of a growing argument list, so the HTML document and the plain header cannot
+            disagree about the same run.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptWriter.WriteHeader(System.IO.TextWriter,TranscribeCppSharp.Cli.TranscriptFormat,TranscribeCppSharp.Cli.TranscriptInfo)">
+            <summary>
+            Writes what is known before the first window. JSON and HTML have nothing
+            yet: those documents are written once at the end, when every segment is
+            known.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptWriter.WriteSegment(System.IO.TextWriter,TranscribeCppSharp.Cli.TranscriptFormat,TranscribeCppSharp.Cli.TranscriptLine)">
+            <summary>Writes one segment, in the shape of the chosen format.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptWriter.WriteFooter(System.IO.TextWriter,TranscribeCppSharp.Cli.TranscriptFormat,TranscribeCppSharp.Cli.TranscriptInfo,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.Cli.TranscriptLine})">
+            <summary>Writes what is known once every window has been transcribed.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptWriter.WriteLine(System.IO.TextWriter,System.String)">
+            <summary>
+            Writes one line terminated by "\n", whatever the writer's own newline
+            convention is.
+            </summary>
+            <remarks>
+            The transcript formats are files other tools read, and the same audio has
+            to produce the same bytes on every platform. <see cref="T:System.IO.TextWriter"/>
+            .WriteLine emits "\r\n" on Windows, so relying on it made a WebVTT file
+            written there differ byte-for-byte from the identical file written on
+            Linux, and made the output depend on whichever writer happened to be
+            passed in. WebVTT is conventionally LF-terminated, and the plain, JSON and
+            HTML forms are only more consistent for being the same.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Cli.TranscriptWriter.WriteLine(System.IO.TextWriter)">
+            <summary>Writes an empty line.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.HtmlTranscriptSegment">
+            <summary>One transcript paragraph, positioned on the timeline.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptSegment.#ctor(System.Double,System.Double,System.Int32,System.String)">
+            <summary>One transcript paragraph, positioned on the timeline.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.HtmlTranscriptInfo">
+            <summary>What the document records about the run that produced it.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptInfo.#ctor(System.String,System.Nullable{System.TimeSpan},System.String,System.String,System.String,System.Int32,System.DateTime)">
+            <summary>What the document records about the run that produced it.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter">
+            <summary>
+            Writes the HTML transcript. The shape is documented in docs/exporting.md:
+            one table row per segment, a line number in the first cell, and timestamps
+            inserted at the start, on every speaker change and every minute, so a reader
+            can paste the text into a qualitative-analysis tool and keep the positions.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.TimestampIntervalMs">
+            <summary>Longest gap the inline timestamps allow, by default.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.MaxPauseDots">
+            <summary>Most dots one pause marker may hold, however long the silence.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.Write(System.IO.TextWriter,TranscribeCppSharp.SharedSource.HtmlTranscriptInfo,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.SharedSource.HtmlTranscriptSegment},System.Int32,System.Int32,System.Collections.Generic.IReadOnlyDictionary{System.Int32,System.String})">
+            <summary>Writes the whole document, from &lt;!DOCTYPE html&gt; to &lt;/html&gt;.</summary>
+            <param name="writer">Where the document goes.</param>
+            <param name="info">What the document records about the run.</param>
+            <param name="segments">The transcript, one row per segment.</param>
+            <param name="timestampIntervalMs">
+            Longest gap between two inline timestamps. The first segment and every
+            speaker change are stamped regardless; zero leaves only those.
+            </param>
+            <param name="pauseThresholdMs">
+            Shortest gap between two segments that is marked as a pause. Zero turns
+            the markers off.
+            </param>
+            <param name="speakerNames">
+            Names by speaker id. A missing or blank name falls back to "Speaker N".
+            </param>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.PauseRow(System.Double)">
+            <summary>
+            The pause marker row: one dot per whole second of silence, capped so a
+            long gap stays a marker rather than a line of punctuation.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.SpeakerLabel(System.Int32,System.Collections.Generic.IReadOnlyDictionary{System.Int32,System.String})">
+            <summary>The name the reader gave the speaker, or the id when there is none.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.LangAttribute(System.String)">
+            <summary>
+            The lang attribute, or nothing when the value is not a language tag. The
+            CLI uses "auto" when the model chooses for itself, which is not a tag.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.FormatClock(System.Double)">
+            <summary>HH:MM:SS, always with hours, so every stamp in a file aligns.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.FormatDuration(System.Nullable{System.TimeSpan})">
+            <summary>
+            The duration as the plain and VTT headers print it: 00:11 or 1:02:03. The
+            desktop app does not keep the file's duration, so it passes null and the
+            document says "unknown" rather than measuring the last segment and calling
+            that the audio length.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.FormatGenerated(System.DateTime)">
+            <summary>
+            The generation time in the same format the other formats use, invariant so
+            the document does not depend on the machine's culture.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.Encode(System.String)">
+            <summary>
+            Escapes text for HTML. Forgetting this is how a transcript containing
+            "&lt;" or "&amp;" becomes a document that no longer renders what was said.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.HtmlTranscriptWriter.WriteLine(System.IO.TextWriter,System.String)">
+            <summary>Writes one "\n"-terminated line, whatever the writer's newline is.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.SpeechInterval">
+            <summary>A stretch of audio the VAD model classified as speech.</summary>
+            <param name="StartSample">Inclusive start, at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</param>
+            <param name="EndSample">Exclusive end, at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</param>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.SpeechInterval.#ctor(System.Int64,System.Int64)">
+            <summary>A stretch of audio the VAD model classified as speech.</summary>
+            <param name="StartSample">Inclusive start, at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</param>
+            <param name="EndSample">Exclusive end, at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</param>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.SpeechInterval.StartSample">
+            <summary>Inclusive start, at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.SpeechInterval.EndSample">
+            <summary>Exclusive end, at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.SpeechWindows">
+            <summary>Plans transcription windows from speech intervals.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.SpeechWindows.Plan(System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.SharedSource.SpeechInterval},System.Int64,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Pads each interval, merges intervals separated by less than
+            <paramref name="mergeGapMs"/>, drops what is shorter than
+            <paramref name="minSpeechMs"/>, then splits the result into windows of at
+            most <paramref name="maxWindowMs"/> with the ASR overlap, so a word at a
+            split is not cut in half.
+            </summary>
+            <param name="speech">Intervals from the VAD model, in any order.</param>
+            <param name="totalSamples">Length of the file; intervals are clamped to it.</param>
+            <param name="maxWindowMs">Window size the ASR model accepts.</param>
+            <param name="paddingMs">Silence kept on each side of a speech interval.</param>
+            <param name="mergeGapMs">Intervals closer than this are treated as one.</param>
+            <param name="minSpeechMs">Shorter intervals are dropped as noise.</param>
+            <returns>Windows in file order; empty when there is no usable speech.</returns>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.SubtitleFormat">
+            <summary>The subtitle formats this renderer writes.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.SubtitleFormat.Srt">
+            <summary>SubRip: numbered blocks, <c>HH:MM:SS,mmm</c> timestamps.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.SubtitleFormat.Vtt">
+            <summary>WebVTT: a <c>WEBVTT</c> header, <c>HH:MM:SS.mmm</c> timestamps, voice tags for speakers.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.SubtitleFormat.Ass">
+            <summary>Advanced SubStation Alpha: one script with a Default style.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.SubtitleCue">
+            <summary>One subtitle cue, positioned against the whole file.</summary>
+            <param name="StartMs">Start in milliseconds.</param>
+            <param name="EndMs">End in milliseconds.</param>
+            <param name="Speaker">Speaker index; ignored unless the caller asks for labels.</param>
+            <param name="Text">What was said.</param>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.SubtitleCue.#ctor(System.Double,System.Double,System.Int32,System.String)">
+            <summary>One subtitle cue, positioned against the whole file.</summary>
+            <param name="StartMs">Start in milliseconds.</param>
+            <param name="EndMs">End in milliseconds.</param>
+            <param name="Speaker">Speaker index; ignored unless the caller asks for labels.</param>
+            <param name="Text">What was said.</param>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.SubtitleCue.StartMs">
+            <summary>Start in milliseconds.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.SubtitleCue.EndMs">
+            <summary>End in milliseconds.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.SubtitleCue.Speaker">
+            <summary>Speaker index; ignored unless the caller asks for labels.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.SubtitleCue.Text">
+            <summary>What was said.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.SubtitleWriter">
+            <summary>Writes cues as SubRip, WebVTT or ASS.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.SubtitleWriter.Write(System.IO.TextWriter,TranscribeCppSharp.SharedSource.SubtitleFormat,System.Collections.Generic.IEnumerable{TranscribeCppSharp.SharedSource.SubtitleCue},System.Boolean,System.String,System.Collections.Generic.IReadOnlyDictionary{System.Int32,System.String})">
+            <summary>
+            Writes <paramref name="cues"/> in the requested format.
+            </summary>
+            <param name="writer">Destination.</param>
+            <param name="format">Which subtitle format.</param>
+            <param name="cues">The segments to write, in order.</param>
+            <param name="speakerLabels">
+            Whether to prefix each cue with its speaker. Pass false when attribution
+            did not run: every cue would otherwise say "Speaker 0".
+            </param>
+            <param name="title">What the document says about itself, when the format can carry it.</param>
+            <param name="speakerNames">
+            Names the reader typed for a speaker id. A missing entry falls back to
+            "Speaker N", which is what the transcript itself reports.
+            </param>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.SubtitleWriter.Extension(TranscribeCppSharp.SharedSource.SubtitleFormat)">
+            <summary>The file extension a format conventionally uses, without the dot.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.SubtitleWriter.Normalize(System.String)">
+            <summary>Collapses runs of whitespace, which ASR segments often carry.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.UpstreamCatalog">
+            <summary>
+            Reads upstream's pinned model catalog out of the assembly that embedded it.
+            </summary>
+            <remarks>
+            Shared source, not a shared project: the CLI and the GUI both embed
+            <c>catalog.zip</c> and both need the same twenty lines, while the wrapper must
+            not — it is installed by every library consumer, and this data is for the two
+            front ends that display it. A linked file gives one implementation with no
+            package, no public type and no dependency added to either assembly.
+            <para>
+            The resource is read per entry: opening one model's record decompresses that
+            record only, which is why the catalog ships as a zip rather than as the
+            SQLite database upstream releases — that one needs a reader, and a reader in
+            .NET means a native binary.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.UpstreamCatalog.ResourceName">
+            <summary>Embedded as this name by both front ends.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.SharedSource.UpstreamCatalog.Records">
+            <summary>
+            Every record, read once from the archive and then kept.
+            </summary>
+            <remarks>
+            A single pass rather than one open per alias: the WER and diarization columns
+            are read for all seventy-two rows on every grid render, so opening and
+            seeking the archive per row would be seventy-two decompressions repeated on
+            each filter change. The whole catalog is wanted anyway — the WER column needs
+            the accuracy table for every model, not for the selected one.
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.SharedSource.UpstreamCatalog.FeatureKeys">
+            <summary>
+            Every capability key any model records, alphabetically.
+            </summary>
+            <remarks>
+            Built from the records rather than written out, so a key upstream adds cannot
+            be filtered on by name we never learned, and one we name that nothing declares
+            would appear as a choice returning an empty grid. The keys are theirs
+            (<c>lang_detect</c>, <c>diarize</c>), not translated: the filter is over their
+            catalog and a renamed label would be ours to keep in step.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.Read(System.String)">
+            <summary>
+            Upstream's record for one model, or null when it has none.
+            </summary>
+            <remarks>
+            Null is a real answer, not an error: our aliases are derived from the
+            repository name and theirs are not, so one of the seventy-two only matches
+            through <see cref="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.UpstreamName(System.String)"/>. What is never done is inventing a record
+            to fill a detail pane — an absent entry leaves the pane with what the
+            manifest already said.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.UpstreamName(System.String)">
+            <summary>Our alias as upstream spells it. Only one of the seventy-two differs.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.UpstreamCatalog.Record">
+            <summary>
+            What upstream records about a model. Deliberately partial: their records
+            carry accuracy and speed tables, and only what the front ends display is
+            read here — nothing is fetched to be thrown away.
+            </summary>
+            <remarks>
+            <c>Role</c> is upstream's role key ("diarize", "langid", "vad"). It is
+            absent for the 73 speech-to-text entries, which is how their catalog spells
+            ASR rather than a missing answer.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.Record.#ctor(System.String,System.Int64,System.String,System.String,System.String[],System.Collections.Generic.Dictionary{System.String,TranscribeCppSharp.SharedSource.UpstreamCatalog.Capability},System.Collections.Generic.List{TranscribeCppSharp.SharedSource.UpstreamCatalog.Download},System.Collections.Generic.List{TranscribeCppSharp.SharedSource.UpstreamCatalog.Accuracy},TranscribeCppSharp.SharedSource.UpstreamCatalog.Headline,System.String)">
+            <summary>
+            What upstream records about a model. Deliberately partial: their records
+            carry accuracy and speed tables, and only what the front ends display is
+            read here — nothing is fetched to be thrown away.
+            </summary>
+            <remarks>
+            <c>Role</c> is upstream's role key ("diarize", "langid", "vad"). It is
+            absent for the 73 speech-to-text entries, which is how their catalog spells
+            ASR rather than a missing answer.
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.UpstreamCatalog.Capability">
+            <summary>A capability with the flag that separates claimed from checked.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.Capability.#ctor(System.Boolean,System.Boolean)">
+            <summary>A capability with the flag that separates claimed from checked.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.UpstreamCatalog.Download">
+            <summary>One published quantization of one model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.Download.#ctor(System.String,System.String,System.Int64)">
+            <summary>One published quantization of one model.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.UpstreamCatalog.Accuracy">
+            <summary>One measured accuracy result, with its provenance.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.Accuracy.#ctor(System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Double},System.String,System.Nullable{System.Double})">
+            <summary>One measured accuracy result, with its provenance.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.UpstreamCatalog.Headline">
+            <summary>The result upstream says should be quoted for this model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.UpstreamCatalog.Headline.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>The result upstream says should be quoted for this model.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.VadWindowing">
+            <summary>VAD over a whole file, window by window, with the intervals merged.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SharedSource.VadWindowing.VadRunResult">
+            <summary>The merged speech segments (file samples) and the total frame count.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.VadWindowing.VadRunResult.#ctor(System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.VadSession.VadSegmentResult},System.Int32)">
+            <summary>The merged speech segments (file samples) and the total frame count.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.VadWindowing.Run(TranscribeCppSharp.VadSession,TranscribeCppSharp.Audio.PcmSource,System.Int32,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Scores <paramref name="source"/> in windows of
+            <paramref name="windowSeconds"/> (1 s overlap, like the ASR path) and
+            returns the speech intervals in file-sample coordinates, unioned where two
+            windows saw the same speech at the seam.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SharedSource.VadWindowing.Merge(System.Collections.Generic.List{TranscribeCppSharp.VadSession.VadSegmentResult})">
+            <summary>
+            Unions overlapping or touching intervals. They arrive in window order, so
+            they are already sorted by start; a window's overlap with the next means the
+            same speech is reported twice at the seam.
+            </summary>
+            <remarks>Internal, not private, so the merge rules are unit tested directly.</remarks>
+        </member>
+    </members>
+</doc>

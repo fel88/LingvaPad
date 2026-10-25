@@ -42,6 +42,9 @@
             editToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
+            toolStripButton2 = new ToolStripButton();
+            toolStripDropDownButton1 = new ToolStripDropDownButton();
+            fromClipboardToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1 = new TableLayoutPanel();
             listView2 = new ListView();
             columnHeader3 = new ColumnHeader();
@@ -145,7 +148,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1 });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton1, toolStripButton2, toolStripDropDownButton1 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(980, 25);
@@ -161,6 +164,31 @@
             toolStripButton1.Size = new Size(23, 22);
             toolStripButton1.Text = "toolStripButton1";
             toolStripButton1.Click += toolStripButton1_Click;
+            // 
+            // toolStripButton2
+            // 
+            toolStripButton2.Image = (Image)resources.GetObject("toolStripButton2.Image");
+            toolStripButton2.ImageTransparentColor = Color.Magenta;
+            toolStripButton2.Name = "toolStripButton2";
+            toolStripButton2.Size = new Size(114, 22);
+            toolStripButton2.Text = "toolStripButton2";
+            // 
+            // toolStripDropDownButton1
+            // 
+            toolStripDropDownButton1.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { fromClipboardToolStripMenuItem });
+            toolStripDropDownButton1.Image = (Image)resources.GetObject("toolStripDropDownButton1.Image");
+            toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            toolStripDropDownButton1.Size = new Size(56, 22);
+            toolStripDropDownButton1.Text = "import";
+            // 
+            // fromClipboardToolStripMenuItem
+            // 
+            fromClipboardToolStripMenuItem.Name = "fromClipboardToolStripMenuItem";
+            fromClipboardToolStripMenuItem.Size = new Size(180, 22);
+            fromClipboardToolStripMenuItem.Text = "from clipboard";
+            fromClipboardToolStripMenuItem.Click += fromClipboardToolStripMenuItem_Click;
             // 
             // tableLayoutPanel1
             // 
@@ -306,5 +334,8 @@
         private ToolStripMenuItem removeToolStripMenuItem1;
         private ToolStripMenuItem editToolStripMenuItem1;
         private ColumnHeader columnHeader5;
+        private ToolStripButton toolStripButton2;
+        private ToolStripDropDownButton toolStripDropDownButton1;
+        private ToolStripMenuItem fromClipboardToolStripMenuItem;
     }
 }

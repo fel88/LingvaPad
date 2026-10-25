@@ -235,5 +235,11 @@ namespace LingvaPad
 
             UpdateList2();
         }
+
+        private void fromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var text = Clipboard.GetText();
+            //Db.Instance.Sentences.FirstOrDefault()
+        }
     }
 }

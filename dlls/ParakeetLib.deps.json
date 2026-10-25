@@ -1,0 +1,73 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "ParakeetLib/1.0.0": {
+        "dependencies": {
+          "TranscribeCppSharp": "1.0.0",
+          "TranscribeCppSharp.Interop": "1.0.0",
+          "Transcriber.Common": "1.0.0"
+        },
+        "runtime": {
+          "ParakeetLib.dll": {}
+        }
+      },
+      "TranscribeCppSharp/1.0.0": {
+        "dependencies": {
+          "TranscribeCppSharp.Interop": "1.0.0"
+        },
+        "runtime": {
+          "TranscribeCppSharp.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "TranscribeCppSharp.Interop/1.0.0": {
+        "runtime": {
+          "TranscribeCppSharp.Interop.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Transcriber.Common/1.0.0": {
+        "dependencies": {
+          "TranscribeCppSharp": "1.0.0"
+        },
+        "runtime": {
+          "Transcriber.Common.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ParakeetLib/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "TranscribeCppSharp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "TranscribeCppSharp.Interop/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Transcriber.Common/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

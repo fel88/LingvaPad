@@ -1,0 +1,2303 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TranscribeCppSharp</name>
+    </assembly>
+    <members>
+        <member name="T:TranscribeCppSharp.AbiValidation">
+            <summary>
+            Centralized ABI validation for the managed/native struct boundary.
+            Guards against the native library drifting from the pinned bindings:
+            total struct size is checked against the native-reported ABI size.
+            Field-offset integrity is verified separately (AbiLayout, generated from the
+            bindgen compile-time checks) — see AbiLayoutTest.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.AbiValidation.SChecked">
+            <summary>
+            The native library reports ABI sizes that cannot change within a loaded
+            process, and <see cref="M:System.Runtime.InteropServices.Marshal.SizeOf``1"/> is constant per type, so each
+            (ABI token, type) pair is validated exactly once and then memoized.
+            This keeps the guard on the hot path (every builder construction) to a
+            cheap dictionary lookup after the first call.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.AbiValidation.ValidateSize``1(TranscribeCppSharp.Interop.AbiStruct,System.String)">
+            <summary>
+            Throw if the managed <typeparamref name="T"/> size does not match the size
+            reported by the native library for <paramref name="abi"/>.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.AbortSource">
+            <summary>
+            Owns the single interop abort delegate a session registers with the native
+            side and switches it between "a <see cref="T:System.Threading.CancellationToken"/> is
+            installed" and "do not abort". Shared by the diarize, langid and vad
+            sessions, which each expose only a cancellation token (the ASR session
+            additionally supports a user callback).
+            </summary>
+            <remarks>
+            The delegate is created once and reused so a repeated cancellable call
+            allocates nothing here; it is rooted for the session's lifetime because the
+            native library holds its pointer.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.AbortSource.#ctor(System.Action{TranscribeCppSharp.Interop.AbortCallback,System.IntPtr})">
+            <summary>
+            Owns the single interop abort delegate a session registers with the native
+            side and switches it between "a <see cref="T:System.Threading.CancellationToken"/> is
+            installed" and "do not abort". Shared by the diarize, langid and vad
+            sessions, which each expose only a cancellation token (the ASR session
+            additionally supports a user callback).
+            </summary>
+            <remarks>
+            The delegate is created once and reused so a repeated cancellable call
+            allocates nothing here; it is rooted for the session's lifetime because the
+            native library holds its pointer.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.AbortSource.UseToken(System.Threading.CancellationToken)">
+            <summary>Install <paramref name="ct"/> as the abort source.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.AbortSource.Clear">
+            <summary>Stop aborting (the callback always answers false).</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.AudioLoader">
+            <summary>
+            Opens the input audio as a random-access source of 16 kHz mono float PCM.
+            Throws <see cref="T:TranscribeCppSharp.Audio.AudioLoadException"/> when the file is neither a readable WAV nor decodable
+            by ffmpeg.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.AudioLoader.Open(System.String)">
+            <summary>
+            Opens the input audio as a random-access source of 16 kHz mono float PCM.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.AudioLoader.Load(System.String)">
+            <summary>
+            Loads the whole input as 16 kHz mono float PCM.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.AudioLoader.DecodeWithFfmpeg(System.String)">
+            <summary>
+            Decodes <paramref name="path"/> with ffmpeg into 16 kHz mono f32 PCM,
+            bypassing the direct WAV reader.
+            </summary>
+            <remarks>
+            Public rather than private so tests can drive the decode path directly:
+            <see cref="M:TranscribeCppSharp.Audio.AudioLoader.Load(System.String)"/> short-circuits a 16 kHz mono WAV to the direct reader,
+            which is the comparison these tests need and is otherwise unreachable
+            from outside this class.
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.AudioLoadException">
+            <summary>
+            The input audio could not be read. Carries a message meant for the user.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.AudioLoadException.#ctor(System.String)">
+            <summary>Creates the exception with a message meant for the user.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.AudioLoadException.#ctor(System.String,System.Exception)">
+            <summary>Creates the exception with the underlying cause attached.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.AudioWindow">
+            <summary>One window of audio to transcribe, in samples at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.AudioWindow.#ctor(System.Int32,System.Int32)">
+            <summary>One window of audio to transcribe, in samples at <see cref="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate"/>.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.AudioWindow.StartMs">
+            <summary>Start of the window in the original timeline, in milliseconds.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.FfmpegPcmSource">
+            <summary>
+            Reads 16 kHz mono f32 PCM out of the raw f32 file ffmpeg produced.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.FfmpegPcmSource.LengthSamples">
+            <inheritdoc />
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.FfmpegPcmSource.ReadWindow(System.Int64,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.FfmpegPcmSource.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.MergedSegment">
+            <summary>A segment of the merged transcript, timed against the whole file.</summary>
+            <param name="Start">Start of the segment in the original file.</param>
+            <param name="End">End of the segment in the original file.</param>
+            <param name="Text">Transcribed text.</param>
+            <param name="SpeakerId">Speaker index, 0 when diarization did not run.</param>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.MergedSegment.#ctor(System.TimeSpan,System.TimeSpan,System.String,System.Int32)">
+            <summary>A segment of the merged transcript, timed against the whole file.</summary>
+            <param name="Start">Start of the segment in the original file.</param>
+            <param name="End">End of the segment in the original file.</param>
+            <param name="Text">Transcribed text.</param>
+            <param name="SpeakerId">Speaker index, 0 when diarization did not run.</param>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.MergedSegment.Start">
+            <summary>Start of the segment in the original file.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.MergedSegment.End">
+            <summary>End of the segment in the original file.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.MergedSegment.Text">
+            <summary>Transcribed text.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.MergedSegment.SpeakerId">
+            <summary>Speaker index, 0 when diarization did not run.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.PcmSource">
+            <summary>
+            Random access to 16 kHz mono f32 PCM, without holding the whole input in memory.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.PcmSource.LengthSamples">
+            <summary>Total number of samples available, at 16 kHz mono.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.PcmSource.ReadWindow(System.Int64,System.Int32)">
+            <summary>
+            Reads <paramref name="count"/> samples starting at <paramref name="offset"/>, as a fresh array.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.PcmSource.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.PcmSource.ReadExactlyAt(System.IO.FileStream,System.Int64,System.Span{System.Byte})">
+            <summary>
+            Reads exactly <paramref name="destination"/>.Length bytes at
+            <paramref name="fileOffset"/>, throwing if the file is shorter.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.TranscriptMerger">
+            <summary>
+            Accumulates the windows of one split run into a single transcript.
+            </summary>
+            <remarks>
+            Not thread-safe: feed it the windows in order from one thread. One instance
+            per run; reusing it across runs would carry the previous run's overlap
+            position into the next one and drop its first segments.
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.Audio.TranscriptMerger.SeamToleranceMs">
+            <summary>
+            How far before the end of the last kept segment a new one must start to
+            be kept, in milliseconds.
+            </summary>
+            <remarks>
+            Not zero: the two windows of a seam do not cut at exactly the same
+            place, so the repeated part is not a byte-identical range and a
+            segment boundary can land either side of the cut. Half a second of slack
+            is what the CLI has always used here; it is a tolerance, not a
+            measurement, so it is not tuned against any particular model.
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.Audio.TranscriptMerger.NothingKeptYet">
+            <summary>
+            "Nothing kept yet", as a last-end timestamp.
+            </summary>
+            <remarks>
+            Half of <see cref="F:System.Int64.MinValue"/>, not <see cref="F:System.Int64.MinValue"/>
+            itself: the comparison subtracts <see cref="F:TranscribeCppSharp.Audio.TranscriptMerger.SeamToleranceMs"/> from this
+            value on every segment, and long.MinValue - 500 wraps round to a large
+            positive number, which reads as "the previous window already covered
+            this" and would silently drop every segment of the first window.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.TranscriptMerger.#ctor(System.Boolean)">
+            <summary>
+            Creates a merger.
+            </summary>
+            <param name="retain">
+            Whether to keep the merged segments for <see cref="P:TranscribeCppSharp.Audio.TranscriptMerger.Segments"/> and
+            <see cref="M:TranscribeCppSharp.Audio.TranscriptMerger.BuildText"/>. Pass false when the caller writes each window's
+            segments out as it goes: an hour of speech is ~900 segments, and a
+            front end that streams them to a file has no use for a second copy.
+            The seam bookkeeping is the same either way.
+            </param>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.TranscriptMerger.Segments">
+            <summary>
+            Segments kept so far, in order, timed against the whole file. Empty when
+            the merger was created with <c>retain: false</c>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.TranscriptMerger.Add(TranscribeCppSharp.Audio.AudioWindow,TranscribeCppSharp.Transcript)">
+            <summary>
+            Adds one window's transcript, dropping the segments that the previous
+            window already covered.
+            </summary>
+            <param name="window">The window the transcript was produced from.</param>
+            <param name="transcript">What the native layer returned for it.</param>
+            <returns>The segments that were kept, in order.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.TranscriptMerger.BuildText">
+            <summary>
+            The merged text: the kept segments joined in order.
+            </summary>
+            <remarks>
+            Built from the segments rather than from the last window's FullText,
+            which would only cover that window's audio. Native FullText cannot be
+            concatenated either: each window's ends mid-sentence where the next one
+            begins, so joining them yields a doubled or truncated sentence.
+            Empty when the merger was created with <c>retain: false</c>.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.TranscriptMerger.Shift(TranscribeCppSharp.Audio.AudioWindow,TranscribeCppSharp.WordResult)">
+            <summary>
+            Shifts a word timestamp from window-relative to file-relative.
+            </summary>
+            <param name="window">The window the word came from.</param>
+            <param name="word">The word, as returned for that window.</param>
+            <returns>The same word, timed against the whole file.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.TranscriptMerger.Shift(TranscribeCppSharp.Audio.AudioWindow,TranscribeCppSharp.SpeakerSegmentResult)">
+            <summary>
+            Shifts a speaker segment timestamp from window-relative to file-relative.
+            </summary>
+            <param name="window">The window the row came from.</param>
+            <param name="speaker">The row, as returned for that window.</param>
+            <returns>The same row, timed against the whole file.</returns>
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.WavPcmSource">
+            <summary>
+            Reads 16 kHz mono f32 PCM out of a 16-bit PCM WAV, straight from the file.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Audio.WavPcmSource.LengthSamples">
+            <inheritdoc />
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.WavPcmSource.TryOpen(System.String)">
+            <summary>
+            Opens <paramref name="path"/>, or returns null when it is not a WAV this
+            can read directly, so the caller can fall back to ffmpeg.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.WavPcmSource.ReadWindow(System.Int64,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.WavPcmSource.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:TranscribeCppSharp.Audio.WindowPlanner">
+            <summary>
+            Cuts audio into overlapping windows for transcription of long audio.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Audio.WindowPlanner.SampleRate">
+            <summary>Sample rate the native library expects.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Audio.WindowPlanner.OverlapMs">
+            <summary>Overlap between two consecutive windows, in milliseconds.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Audio.WindowPlanner.OverlapSamples">
+            <summary>Overlap between two consecutive windows, in samples.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Audio.WindowPlanner.TryPlan(System.Int32,System.Int32,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.Audio.AudioWindow}@,System.String@)">
+            <summary>
+            Cuts <paramref name="totalSamples"/> into overlapping windows of at most
+            <paramref name="windowMs"/>. Fails (with a message meant for the user)
+            when the window leaves no room for the overlap, or when the audio is
+            empty, instead of looping forever or calling the native layer with 0
+            samples.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.BackendDevice">
+            <summary>
+            A compute backend device (CPU, GPU, iGPU).
+            <see cref="P:TranscribeCppSharp.BackendDevice.Handle"/> is the runtime-owned opaque device handle, valid for
+            the life of the process (do not free). Pass it to
+            <see cref="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithDevice(TranscribeCppSharp.BackendDevice)"/> for exact
+            selection, or persist <see cref="P:TranscribeCppSharp.BackendDevice.DeviceId"/> and re-enumerate later.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.BackendDevice.#ctor(System.String,System.String,System.String,System.String,System.UInt64,System.UInt64,TranscribeCppSharp.Interop.DeviceType)">
+            <summary>
+            A compute backend device (CPU, GPU, iGPU).
+            <see cref="P:TranscribeCppSharp.BackendDevice.Handle"/> is the runtime-owned opaque device handle, valid for
+            the life of the process (do not free). Pass it to
+            <see cref="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithDevice(TranscribeCppSharp.BackendDevice)"/> for exact
+            selection, or persist <see cref="P:TranscribeCppSharp.BackendDevice.DeviceId"/> and re-enumerate later.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.BackendDevice.Handle">
+            <summary>Opaque runtime-owned device handle (IntPtr.Zero = automatic selection).</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.BackendMask">
+            <summary>
+            Which compute backends may be initialized. Values match the upstream
+            <c>TRANSCRIBE_BACKEND_MASK_*</c> constants (include/transcribe.h in
+            transcribe.cpp 0.4).
+            </summary>
+            <remarks>
+            Passed to <see cref="M:TranscribeCppSharp.Backends.InitDefault(TranscribeCppSharp.BackendMask)"/> or
+            <see cref="M:TranscribeCppSharp.Backends.Init(System.String,TranscribeCppSharp.BackendMask)"/> to restrict initialization
+            (for example, to force CPU on a machine whose GPU driver is unreliable).
+            <see cref="P:TranscribeCppSharp.Backends.AllowedBackends"/> reports the mask in effect after
+            initialization.
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.None">
+            <summary>Initialize nothing.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.Cpu">
+            <summary>CPU backend.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.Metal">
+            <summary>Metal (Apple GPU).</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.Vulkan">
+            <summary>Vulkan.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.Cuda">
+            <summary>CUDA (NVIDIA).</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.Rocm">
+            <summary>ROCm (AMD).</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.Other">
+            <summary>Any other backend the library knows about.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.BackendMask.All">
+            <summary>Every backend (the default).</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Backends">
+            <summary>
+            Static API for backend initialization, device enumeration, and version info.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Backends.Version">
+            <summary>Native library version string (e.g. "0.2.3").</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Backends.VersionCommit">
+            <summary>Native library git commit hash.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.InitDefault">
+            <summary>
+            Initialize all available backends with default settings.
+            Call once at application startup.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.InitDefault(TranscribeCppSharp.BackendMask)">
+            <summary>
+            Initialize backends with default settings, restricted to
+            <paramref name="allowed"/>. Upstream 0.4 added the allowlist; a mask of
+            <see cref="F:TranscribeCppSharp.BackendMask.All"/> is the default behavior.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.Init(System.String)">
+            <summary>
+            Initialize backends with a specific artifact directory (for DLLs, shaders, etc.).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.Init(System.String,TranscribeCppSharp.BackendMask)">
+            <summary>
+            Initialize backends with a specific artifact directory, restricted to
+            <paramref name="allowed"/> (upstream 0.4 allowlist).
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Backends.AllowedBackends">
+            <summary>
+            The backend allowlist currently in effect
+            (<c>transcribe_allowed_backends</c>). Before initialization this is the
+            library default; after, what was requested.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.EnsureInitialized">
+            <summary>
+            Initialize backends on demand (idempotent). Called by <see cref="M:TranscribeCppSharp.Model.Load(System.String,System.Action{TranscribeCppSharp.ModelLoadParamsBuilder})"/>
+            so a plain load works without an explicit <see cref="M:TranscribeCppSharp.Backends.InitDefault"/> first.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.BackendAvailable(TranscribeCppSharp.Interop.BackendRequest)">
+            <summary>
+            Whether a backend request can be satisfied by a currently registered
+            device. AUTO is true whenever any device exists; CPU/CPU_ACCEL when a
+            CPU device exists; METAL/VULKAN/CUDA when a device of that kind exists.
+            Unknown or invalid request values answer false (never an error).
+            Corresponds to native transcribe_backend_available.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.EnumerateDevices">
+            <summary>
+            Enumerate all available compute devices.
+            Handles are runtime-owned and valid for the life of the process.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Backends.GetDeviceInfo(System.IntPtr)">
+            <summary>
+            Resolve metadata for a runtime-owned device handle (e.g. from
+            <see cref="P:TranscribeCppSharp.Model.Device"/>). Returns null when handle is zero.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Batch">
+            <summary>
+            Batch transcription API. Process multiple audio clips in a single call.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Batch.Run(TranscribeCppSharp.Session,System.Collections.Generic.IReadOnlyList{System.Single[]},System.Action{TranscribeCppSharp.RunParamsBuilder},System.Threading.CancellationToken)">
+            <summary>
+            Transcribe multiple PCM buffers in a single batch.
+            Supports cancellation via <paramref name="ct"/>.
+            </summary>
+            <param name="session">The session to use for transcription.</param>
+            <param name="pcmBuffers">PCM buffers (16 kHz mono f32), one per audio clip.</param>
+            <param name="configure">Optional configuration for run parameters.</param>
+            <param name="ct">Optional cancellation token.</param>
+            <returns>Array of results, one per input buffer.</returns>
+        </member>
+        <member name="T:TranscribeCppSharp.BatchResult">
+            <summary>
+            Result of a single item in a batch transcription.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.BatchResult.#ctor(System.Int32,System.String,System.String,TranscribeCppSharp.Interop.Status,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.SegmentResult},System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.WordResult},System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.TokenResult},TranscribeCppSharp.TimingsResult,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.SpeakerSegmentResult},System.String)">
+            <summary>
+            Result of a single item in a batch transcription.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.DiarizeParamsBuilder">
+            <summary>
+            Fluent builder for diarization run parameters
+            (<c>transcribe_diarize_params</c>).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeParamsBuilder.WithSortformerExt(TranscribeCppSharp.SortformerDiarizeExtBuilder)">
+            <summary>
+            Sortformer family extension parameters (the latency/quality preset).
+            Takes ownership of the builder — it is disposed when this builder is
+            disposed or when another ext is set. Do not reuse it after passing it here.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.DiarizeSession">
+             <summary>
+             Offline speaker diarization over a whole buffer, for a model that serves
+             <see cref="F:TranscribeCppSharp.TranscribeRole.Diarize"/> (e.g. Sortformer).
+             </summary>
+             <remarks>
+             Introduced by upstream transcribe.cpp 0.4: diarization is a role of its own,
+             and models whose product is speaker turns no longer run through the ASR
+             session (<see cref="M:TranscribeCppSharp.Model.CreateSession(System.Action{TranscribeCppSharp.SessionParamsBuilder})"/> returns
+             <see cref="F:TranscribeCppSharp.Interop.Status.ErrUnsupportedRole"/> on them). The upstream API has no
+             streaming diarization entry point — run the whole buffer.
+            
+             Not thread-safe. The session keeps its parent <see cref="T:TranscribeCppSharp.Model"/> alive.
+             </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.DiarizeSession.DiarizeInfo">
+            <summary>Facts about a loaded diarization model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSession.DiarizeInfo.#ctor(System.Int32,System.Int32)">
+            <summary>Facts about a loaded diarization model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSession.Run(System.ReadOnlySpan{System.Single},System.Action{TranscribeCppSharp.DiarizeParamsBuilder},System.Threading.CancellationToken)">
+            <summary>
+            Diarize a PCM buffer (16 kHz mono f32) and return the speaker segments.
+            Supports cancellation via <paramref name="ct"/>.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.DiarizeSession.SegmentCount">
+            <summary>Number of speaker segments in the last result.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSession.ReadSegments">
+            <summary>Read the speaker segments of the last run.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSession.GetTimings">
+            <summary>Timing statistics for the last run, or null when unavailable.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSession.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.DiarizeSessionParamsBuilder">
+            <summary>
+            Fluent builder for a diarization session's parameters
+            (<c>transcribe_diarize_session_params</c>).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSessionParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSessionParamsBuilder.WithThreads(System.Int32)">
+            <summary>Number of CPU threads. 0 = library default.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.DiarizeSessionParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.ExtBuffer`1">
+            <summary>
+            Owns the native memory and managed snapshot of an extension-parameter struct
+            shared by the fluent <c>*ExtBuilder</c> types. Encapsulates the allocate →
+            native-init → snapshot → size-guard → write-back → free lifecycle that the
+            five extension builders previously duplicated.
+            </summary>
+            <typeparam name="T">The native ext struct (must embed an <c>Ext</c> header).</typeparam>
+        </member>
+        <member name="M:TranscribeCppSharp.ExtBuffer`1.#ctor(System.Action{System.IntPtr},System.Func{`0,System.UInt64},System.String)">
+            <summary>
+            Allocate an unmanaged buffer, ask the native library to initialize it,
+            snapshot it into the managed struct, and verify the native-reported size
+            (first field of the embedded <c>Ext</c> header) matches the C# layout.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ExtBuffer`1.ThrowIfDisposed">
+            <summary>Throws <see cref="T:System.ObjectDisposedException"/> if the buffer has been disposed.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.ExtBuffer`1.Params">
+            <summary>Mutable snapshot of the native struct; mutated by the fluent builders.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ExtBuffer`1.Build">
+            <summary>Write the snapshot back to unmanaged memory and return the buffer.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.LangIdParamsBuilder">
+            <summary>
+            Fluent builder for language-identification run parameters
+            (<c>transcribe_langid_params</c>).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdParamsBuilder.WithAllowed(System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+            Restrict the ranking to <paramref name="codes"/> (language codes or
+            aliases the model knows). With no restriction the result ranks every label.
+            The strings are copied; the caller keeps ownership of the input.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.LangIdSession">
+            <summary>
+            Language identification of a clip, for a model that serves
+            <see cref="F:TranscribeCppSharp.TranscribeRole.Langid"/> (e.g. VoxLingua107 ECAPA-TDNN).
+            </summary>
+            <remarks>
+            Introduced by upstream transcribe.cpp 0.4. Not thread-safe. The session
+            keeps its parent <see cref="T:TranscribeCppSharp.Model"/> alive.
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.LangIdSession.LangIdInfo">
+            <summary>Facts about a loaded language-identification model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.LangIdInfo.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>Facts about a loaded language-identification model.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.LangIdSession.LangIdCandidate">
+            <summary>One ranked language candidate from a language-identification run.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.LangIdCandidate.#ctor(System.Int32,System.String,System.String,System.Single,System.Single)">
+            <summary>One ranked language candidate from a language-identification run.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.LangIdSession.LangIdResult">
+            <summary>
+            The result of a language-identification run: candidates ranked by
+            probability, plus the share of the distribution that fell inside the
+            allowed set.
+            </summary>
+            <param name="Candidates">Ranked candidates (one per allowed label, or every label when unrestricted).</param>
+            <param name="AllowedMass">
+            Share of the softmax over every label that falls in the allowed set; 1 when
+            unrestricted. A low value means the speech is probably outside the allowed set.
+            </param>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.LangIdResult.#ctor(System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.LangIdSession.LangIdCandidate},System.Single)">
+            <summary>
+            The result of a language-identification run: candidates ranked by
+            probability, plus the share of the distribution that fell inside the
+            allowed set.
+            </summary>
+            <param name="Candidates">Ranked candidates (one per allowed label, or every label when unrestricted).</param>
+            <param name="AllowedMass">
+            Share of the softmax over every label that falls in the allowed set; 1 when
+            unrestricted. A low value means the speech is probably outside the allowed set.
+            </param>
+        </member>
+        <member name="P:TranscribeCppSharp.LangIdSession.LangIdResult.Candidates">
+            <summary>Ranked candidates (one per allowed label, or every label when unrestricted).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.LangIdSession.LangIdResult.AllowedMass">
+            <summary>
+            Share of the softmax over every label that falls in the allowed set; 1 when
+            unrestricted. A low value means the speech is probably outside the allowed set.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.Run(System.ReadOnlySpan{System.Single},System.Action{TranscribeCppSharp.LangIdParamsBuilder},System.Threading.CancellationToken)">
+            <summary>
+            Identify the spoken language of a PCM buffer (16 kHz mono f32) and return
+            the ranked candidates. Supports cancellation via <paramref name="ct"/>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.ReadResult">
+            <summary>Read the result of the last run.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.GetTimings">
+            <summary>Timing statistics for the last run, or null when unavailable.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSession.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.LangIdSessionParamsBuilder">
+            <summary>
+            Fluent builder for a language-identification session's parameters
+            (<c>transcribe_langid_session_params</c>).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSessionParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSessionParamsBuilder.WithThreads(System.Int32)">
+            <summary>Number of CPU threads. 0 = library default.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.LangIdSessionParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.Log">
+            <summary>
+            Configure native log output. Call before Backends.InitDefault().
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Log.Configure(System.Action{TranscribeCppSharp.Interop.LogLevel,System.String})">
+            <summary>
+            Set a handler for native log messages.
+            Pass null to disable logging.
+            </summary>
+            <remarks>
+            Per the upstream transcribe.cpp library (its public header, see
+            transcribe_log_set): the handler may be invoked from any thread,
+            including ggml worker threads, so it must be safe for concurrent access
+            and must not assume it runs on the caller thread. Call once at process
+            startup, before any model is loaded.
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.Model">
+            <summary>
+            A loaded transcription model. Disposing this frees the native model.
+            Thread-safe: safe to create multiple sessions from different threads.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.Load(System.String,System.Action{TranscribeCppSharp.ModelLoadParamsBuilder})">
+            <summary>
+            Load a model from a GGUF file.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.CreateSession(System.Action{TranscribeCppSharp.SessionParamsBuilder})">
+            <summary>Create a new transcription session from this model.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Model.Roles">
+            <summary>
+            The kinds of work this model serves, fixed at load. Introduced by
+            transcribe.cpp 0.4. See <see cref="T:TranscribeCppSharp.TranscribeRole"/>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.CreateDiarizeSession(System.Action{TranscribeCppSharp.DiarizeSessionParamsBuilder})">
+            <summary>Create an offline speaker-diarization session from this model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetDiarizeInfo">
+            <summary>
+            Facts about the model as a diarizer. Throws a <see cref="T:TranscribeCppSharp.TranscribeException"/>
+            with <see cref="F:TranscribeCppSharp.Interop.Status.ErrUnsupportedRole"/> when the model does not serve
+            <see cref="F:TranscribeCppSharp.TranscribeRole.Diarize"/>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.CreateLangIdSession(System.Action{TranscribeCppSharp.LangIdSessionParamsBuilder})">
+            <summary>Create a language-identification session from this model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetLangIdInfo">
+            <summary>
+            Facts about the model as a language identifier. Throws a
+            <see cref="T:TranscribeCppSharp.TranscribeException"/> with <see cref="F:TranscribeCppSharp.Interop.Status.ErrUnsupportedRole"/>
+            when the model does not serve <see cref="F:TranscribeCppSharp.TranscribeRole.Langid"/>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetLangIdLabelCode(System.Int32)">
+            <summary>Language code of label <paramref name="index"/>, or null when out of range.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetLangIdLabelName(System.Int32)">
+            <summary>Human-readable name of label <paramref name="index"/>, or null when out of range.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetLangIdLabelIndex(System.String)">
+            <summary>Index of the label for a code or alias, or a negative value when unknown.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.CreateVadSession(System.Action{TranscribeCppSharp.VadSessionParamsBuilder})">
+            <summary>Create a voice-activity-detection session from this model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetVadInfo">
+            <summary>
+            Facts about the model as a voice-activity detector. Throws a
+            <see cref="T:TranscribeCppSharp.TranscribeException"/> with <see cref="F:TranscribeCppSharp.Interop.Status.ErrUnsupportedRole"/>
+            when the model does not serve <see cref="F:TranscribeCppSharp.TranscribeRole.Vad"/>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetMetaValue(System.String)">
+            <summary>
+            Query a metadata string from the loaded model.
+            The returned string is a snapshot copy — safe to keep after the call.
+            The native pointer is borrowed from the model and must not be freed.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Model.Architecture">
+            <summary>
+            Architecture of the model (e.g. "whisper").
+            Returns a managed copy of the native string — safe to keep.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Model.Variant">
+            <summary>
+            Variant of the architecture (e.g. "tiny").
+            Returns a managed copy of the native string — safe to keep.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Model.Backend">
+            <summary>
+            Name of the backend being used (e.g. "cpu").
+            Returns a managed copy of the native string — safe to keep.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Model.ModelCapabilities">
+            <summary>Model capabilities.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.ModelCapabilities.#ctor(System.Int32,System.String[],TranscribeCppSharp.Interop.TimestampKind,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Int64,System.String[])">
+            <summary>Model capabilities.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.GetCapabilities">
+            <summary>Get capabilities of the loaded model.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.Supports(TranscribeCppSharp.Interop.Feature)">
+            <summary>Check if the model supports a given feature.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Model.Device">
+            <summary>
+            The compute device this model is running on, with live memory snapshot.
+            Null when the model has no resolved device.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.Tokenize(System.String,System.Int32)">
+            <summary>
+            Tokenize text using the model's tokenizer.
+            </summary>
+            <param name="text">The text to tokenize.</param>
+            <param name="initialCapacity">
+            Initial buffer size in tokens. This is not a limit: if the text needs
+            more tokens, the buffer is grown automatically and the full result is
+            returned.
+            </param>
+            <returns>Array of token IDs for the entire text.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Model.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.ModelLoadParamsBuilder">
+            <summary>
+            Fluent builder for model load parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ModelLoadParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithBackend(TranscribeCppSharp.Interop.BackendRequest)">
+            <summary>Select the compute backend.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithDevice(TranscribeCppSharp.BackendDevice)">
+            <summary>
+            Select an exact compute device (handle from
+            <see cref="M:TranscribeCppSharp.Backends.EnumerateDevices"/>). NULL (default) means
+            automatic selection. Exact selection never falls back to another
+            device; a mismatched backend/device pair makes
+            <see cref="M:TranscribeCppSharp.Model.Load(System.String,System.Action{TranscribeCppSharp.ModelLoadParamsBuilder})"/> throw <see cref="T:TranscribeCppSharp.TranscribeException"/>.
+            Handles are process-local: persist DeviceId, re-enumerate per process.
+            A device without a handle (IntPtr.Zero, e.g. hand-constructed) is
+            rejected — pass no device for automatic selection.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithDevice(System.IntPtr)">
+            <summary>Select an exact compute device by its runtime-owned handle.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithGpuDevice(System.Int32)">
+            <summary>
+            Removed in transcribe.cpp 0.2: integer GPU indices no longer exist.
+            Enumerate <see cref="M:TranscribeCppSharp.Backends.EnumerateDevices"/> and use
+            <see cref="M:TranscribeCppSharp.ModelLoadParamsBuilder.WithDevice(TranscribeCppSharp.BackendDevice)"/> instead (0 is now a
+            selectable device, no longer the auto sentinel — pass NULL /
+            do not call WithDevice for automatic selection).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ModelLoadParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.Models.ModelDescriptor">
+            <summary>
+            One entry of the curated model manifest: a GGUF published on HuggingFace at a
+            pinned revision, with the checksum needed to verify the download.
+            </summary>
+            <param name="Alias">Short name accepted wherever a model is expected.</param>
+            <param name="Repo">HuggingFace repository, "owner/name".</param>
+            <param name="Revision">Pinned commit; the manifest never floats.</param>
+            <param name="License">SPDX-style license identifier.</param>
+            <param name="LicenseUrl">Where the license text lives.</param>
+            <param name="Quant">Quantization of this entry's file, e.g. "Q5_K_M".</param>
+            <param name="File">File name inside <paramref name="Repo"/>.</param>
+            <param name="Sha256">Expected checksum of the downloaded file.</param>
+            <param name="Size">Size in bytes, or 0 when the manifest does not state it.</param>
+            <param name="Family">Model family as upstream records it, or null when the manifest has none.</param>
+            <param name="Params">Parameter count as upstream records it, or 0 when not stated.</param>
+            <param name="UpstreamRepo">Checkpoint the GGUF was converted from.</param>
+            <param name="UpstreamCommit">Exact commit of that checkpoint.</param>
+            <param name="Languages">
+            Languages the model card declares, or null when the manifest has none. This is
+            what the model's own card says about it, so it is documentation rather than a
+            guarantee: what the model accepts is answered by the loaded model, through
+            <c>Model.GetCapabilities</c>. Kept for display before a download, when there is
+            no model to ask.
+            </param>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelDescriptor.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Int64,System.String[],System.String,System.Int64,System.String,System.String)">
+            <summary>
+            One entry of the curated model manifest: a GGUF published on HuggingFace at a
+            pinned revision, with the checksum needed to verify the download.
+            </summary>
+            <param name="Alias">Short name accepted wherever a model is expected.</param>
+            <param name="Repo">HuggingFace repository, "owner/name".</param>
+            <param name="Revision">Pinned commit; the manifest never floats.</param>
+            <param name="License">SPDX-style license identifier.</param>
+            <param name="LicenseUrl">Where the license text lives.</param>
+            <param name="Quant">Quantization of this entry's file, e.g. "Q5_K_M".</param>
+            <param name="File">File name inside <paramref name="Repo"/>.</param>
+            <param name="Sha256">Expected checksum of the downloaded file.</param>
+            <param name="Size">Size in bytes, or 0 when the manifest does not state it.</param>
+            <param name="Family">Model family as upstream records it, or null when the manifest has none.</param>
+            <param name="Params">Parameter count as upstream records it, or 0 when not stated.</param>
+            <param name="UpstreamRepo">Checkpoint the GGUF was converted from.</param>
+            <param name="UpstreamCommit">Exact commit of that checkpoint.</param>
+            <param name="Languages">
+            Languages the model card declares, or null when the manifest has none. This is
+            what the model's own card says about it, so it is documentation rather than a
+            guarantee: what the model accepts is answered by the loaded model, through
+            <c>Model.GetCapabilities</c>. Kept for display before a download, when there is
+            no model to ask.
+            </param>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Alias">
+            <summary>Short name accepted wherever a model is expected.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Repo">
+            <summary>HuggingFace repository, "owner/name".</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Revision">
+            <summary>Pinned commit; the manifest never floats.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.License">
+            <summary>SPDX-style license identifier.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.LicenseUrl">
+            <summary>Where the license text lives.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Quant">
+            <summary>Quantization of this entry's file, e.g. "Q5_K_M".</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.File">
+            <summary>File name inside <paramref name="Repo"/>.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Sha256">
+            <summary>Expected checksum of the downloaded file.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Size">
+            <summary>Size in bytes, or 0 when the manifest does not state it.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Languages">
+            <summary>
+            Languages the model card declares, or null when the manifest has none. This is
+            what the model's own card says about it, so it is documentation rather than a
+            guarantee: what the model accepts is answered by the loaded model, through
+            <c>Model.GetCapabilities</c>. Kept for display before a download, when there is
+            no model to ask.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Family">
+            <summary>Model family as upstream records it, or null when the manifest has none.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.Params">
+            <summary>Parameter count as upstream records it, or 0 when not stated.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.UpstreamRepo">
+            <summary>Checkpoint the GGUF was converted from.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.UpstreamCommit">
+            <summary>Exact commit of that checkpoint.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.DownloadUrl">
+            <summary>
+            The URL the file is downloaded from. Pinned to <see cref="P:TranscribeCppSharp.Models.ModelDescriptor.Revision"/>, so
+            the same bytes are fetched every time.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.RepoUrl">
+            <summary>Model card for this repository.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelDescriptor.IsNonCommercialLicense">
+            <summary>
+            True when the license terms forbid commercial use. The manifest uses
+            SPDX ids, so this is a text test on the identifier, not a license list.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Models.ModelSize">
+            <summary>
+            A byte count split into a number and a unit, so a caller can align the number
+            in a column and print the unit beside it.
+            </summary>
+            <param name="Value">The magnitude, in <paramref name="Unit"/>.</param>
+            <param name="Unit">The unit, one of "KB", "MB" or "GB".</param>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelSize.#ctor(System.Double,System.String)">
+            <summary>
+            A byte count split into a number and a unit, so a caller can align the number
+            in a column and print the unit beside it.
+            </summary>
+            <param name="Value">The magnitude, in <paramref name="Unit"/>.</param>
+            <param name="Unit">The unit, one of "KB", "MB" or "GB".</param>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelSize.Value">
+            <summary>The magnitude, in <paramref name="Unit"/>.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelSize.Unit">
+            <summary>The unit, one of "KB", "MB" or "GB".</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelSize.ToString">
+            <summary>
+            Renders as a number and a unit, e.g. "1.08 GB".
+            </summary>
+            <remarks>
+            Invariant culture, because this is compared against other sizes rather than
+            read as prose: a French locale printing "1,08 GB" in a table column reads
+            as a thousands separator at a glance.
+            </remarks>
+            <returns>The formatted size.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelSize.Number(System.Int32)">
+            <summary>The number alone, for a column that prints the unit separately.</summary>
+            <param name="width">Field width, right aligned.</param>
+            <returns>The formatted number.</returns>
+        </member>
+        <member name="T:TranscribeCppSharp.Models.ModelSizeFormat">
+            <summary>
+            Formats model sizes for display.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelSizeFormat.Format(System.Int64)">
+            <summary>
+            Splits a byte count into a magnitude and a unit.
+            </summary>
+            <param name="bytes">The size; 0 or less yields "0 MB".</param>
+            <returns>The size, scaled to the largest unit that leaves it at or above 1.</returns>
+            <remarks>
+            The base is 1024, so "MB" here means what the binary prefix calls MiB.
+            Both existing implementations already used 1024 and already said "MB",
+            so the labels are kept rather than corrected in passing; the difference is
+            recorded here instead of hidden.
+            <para>
+            Rounding is to two decimals. A model size is a download size, where the
+            third decimal of a gigabyte is noise, and the manifest's own numbers are
+            exact byte counts to display rather than values to compare.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.Models.ModelStore">
+            <summary>
+            Model resolution and caching, shared by the CLI and the GUI.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.HttpClientFactory">
+            <summary>
+            How the HuggingFace client is built. The download, the sha256
+            verification and the cache are what a user hits on a first run, so they
+            need tests; a seam here is what makes them reachable without the network.
+            Production never sets it.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.CacheRootOverride">
+            <summary>
+            Where models are cached. Set only by tests, to keep their downloads out
+            of the user's real cache; null means the platform default.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.DefaultQuant">
+            <summary>Quantization the manifest defaults to when an alias does not say.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.Catalog">
+            <summary>
+            Every curated alias, ordered by name. This is the catalogue a UI lists;
+            it reads no files and touches no network.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.Find(System.String)">
+            <summary>Looks up one alias, or null when the manifest does not have it.</summary>
+            <param name="alias">The alias to find.</param>
+            <returns>The descriptor, or null.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.CacheRoot">
+            <summary>Where models are cached on this machine.</summary>
+            <returns>An absolute directory path. Created on demand, not here.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.CachedPath(TranscribeCppSharp.Models.ModelDescriptor)">
+            <summary>
+            Local path an alias would use, whether or not it has been downloaded.
+            </summary>
+            <param name="descriptor">The alias to locate.</param>
+            <returns>An absolute path under <see cref="M:TranscribeCppSharp.Models.ModelStore.CacheRoot"/>.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.IsCached(TranscribeCppSharp.Models.ModelDescriptor)">
+            <summary>
+            Whether the alias is already downloaded.
+            </summary>
+            <param name="descriptor">The alias to check.</param>
+            <returns>true when the file is present.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.CachedSize(TranscribeCppSharp.Models.ModelDescriptor)">
+            <summary>
+            Size on disk of a cached alias, or 0 when it is not downloaded.
+            </summary>
+            <param name="descriptor">The alias to measure.</param>
+            <returns>Size in bytes.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.Delete(TranscribeCppSharp.Models.ModelDescriptor)">
+            <summary>
+            Deletes a cached alias from disk.
+            </summary>
+            <param name="descriptor">The alias to remove.</param>
+            <returns>
+            true when a file was deleted; false when it was not cached, or when the
+            delete failed (an unreadable cache is not worth failing a UI over).
+            </returns>
+            <remarks>
+            Only the file itself is removed. The per-revision directory is left
+            alone unless it ends up empty, because several aliases can share one
+            repository and revision.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.Resolve(System.String,System.String,System.IO.TextWriter,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Resolves the model argument: an existing path is used as-is; a known alias
+            or a HuggingFace repo/file spec is fetched (once) and cached.
+            </summary>
+            <param name="argument">A file path, a curated alias or an HF spec.</param>
+            <param name="quant">Optional quantization override for a curated alias.</param>
+            <param name="error">Where progress and diagnostics are reported.</param>
+            <param name="progress">Optional download progress, 0 to 1.</param>
+            <param name="cancellationToken">Stops a download in flight.</param>
+            <returns>An absolute path to a local model file.</returns>
+            <exception cref="T:System.OperationCanceledException">The token was cancelled; the partial download is deleted, so nothing corrupt is cached.</exception>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.List(System.IO.TextWriter)">
+            <summary>
+            Writes the curated aliases, one per line, with quantization, license and size.
+            </summary>
+            <param name="writer">Where the table is written.</param>
+        </member>
+        <member name="M:TranscribeCppSharp.Models.ModelStore.Info(System.String,System.IO.TextWriter,System.IO.TextWriter)">
+            <summary>
+            Writes the detail of one alias: repo, revision, quantization, size, license.
+            </summary>
+            <param name="alias">The alias to describe.</param>
+            <param name="writer">Where the detail is written.</param>
+            <param name="error">Where an unknown alias is reported.</param>
+            <returns>true when the alias is known.</returns>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.ManifestEntry.Languages">
+            <summary>Languages the model card declares, or null when it declares none.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.ManifestEntry.Family">
+            <summary>Model family as upstream records it, or null.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.ManifestEntry.Params">
+            <summary>Parameter count as upstream records it, or 0.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.ManifestEntry.UpstreamRepo">
+            <summary>Checkpoint the GGUF was converted from.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Models.ModelStore.ManifestEntry.UpstreamCommit">
+            <summary>Exact commit of that checkpoint.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.MoonshineExtBuilder">
+            <summary>
+            Fluent builder for Moonshine streaming extension parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.MoonshineExtBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.MoonshineExtBuilder.WithMinDecodeIntervalMs(System.Int32)">
+            <summary>Minimum decode interval in milliseconds.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.MoonshineExtBuilder.DefaultMinDecodeIntervalMs">
+            <summary>
+            What the native <c>moonshine_streaming_stream_ext_init</c> sets, read from
+            the initialized struct rather than written here.
+            </summary>
+            <remarks>
+            The native default is a sentinel, not a cadence: -1 means "use the family
+            default", which is what leaving the extension off also asks for. The value
+            is read from the struct so an upstream change is not silently missed; the
+            meaning is upstream's, documented on the interop struct.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.MoonshineExtBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder">
+            <summary>
+            Fluent builder for Parakeet buffered streaming extension parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.WithLeftMs(System.Int32)">
+            <summary>Left context in milliseconds.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.WithChunkMs(System.Int32)">
+            <summary>Chunk size in milliseconds.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.WithRightMs(System.Int32)">
+            <summary>Right context in milliseconds.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.Initialized">
+            <summary>
+            What the native <c>parakeet_buffered_stream_ext_init</c> sets, read from the
+            initialized struct rather than written here.
+            </summary>
+            <remarks>
+            Each field's native default is the sentinel -1, meaning "use the model
+            default for this field"; leaving the field out of the extension asks for the
+            same thing. The model's own default is a (left, chunk, right) tuple in its
+            training menu — for parakeet-unified-en-0.6b the best-accuracy one is
+            5600/1040/1040 ms, per the interop struct's doc.
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.DefaultLeftMs">
+            <inheritdoc cref="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.Initialized"/>
+        </member>
+        <member name="P:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.DefaultChunkMs">
+            <inheritdoc cref="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.Initialized"/>
+        </member>
+        <member name="P:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.DefaultRightMs">
+            <inheritdoc cref="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.Initialized"/>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetBufferedStreamExtBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.ParakeetStreamExtBuilder">
+            <summary>
+            Fluent builder for Parakeet streaming extension parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetStreamExtBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetStreamExtBuilder.WithAttContextRight(System.Int32)">
+            <summary>Attention context right size.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.ParakeetStreamExtBuilder.DefaultAttContextRight">
+            <summary>
+            What the native <c>parakeet_stream_ext_init</c> sets for the right context,
+            read from the initialized struct rather than written here.
+            </summary>
+            <remarks>
+            -1 means "use the model's default" — the first entry of its
+            <c>att_context_size_choices</c>, which is the max-accuracy/max-latency one.
+            Leaving the extension off asks for the same thing.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.ParakeetStreamExtBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.PcmExtensions">
+            <summary>
+            Extension methods for Span-based PCM loading from WAV files.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.PcmExtensions.ConvertChunkBytes">
+            <summary>
+            How much of the data chunk is read and converted at a time. Large
+            enough that the read syscalls are not the cost, small enough to stay off
+            the large object heap and to be reused between calls.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.PcmExtensions.ReadWavToPcm(System.String)">
+            <summary>
+            Read a 16-bit PCM WAV file and convert to 16 kHz mono float PCM.
+            Supports mono and stereo; multi-channel audio is downmixed to mono.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.PcmExtensions.Convert(System.Byte[],System.Int32,System.Int32,System.Int32,System.Single[],System.Int32)">
+            <summary>
+            Converts <paramref name="frames"/> interleaved 16-bit LE frames from
+            <paramref name="buf"/> into <paramref name="dest"/>, downmixing
+            <paramref name="numChannels"/> channels to one average.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Performance.ModelBenchmark">
+            <summary>
+            One measured transcription run, and the conditions it was measured under.
+            </summary>
+            <remarks>
+            The conditions are not decoration. A timing is only meaningful for the machine,
+            the compute device, the thread count and the audio it was taken on, so they
+            travel with the number. Sorting models by speed while silently mixing results
+            from two different machines would produce a ranking that is wrong for both.
+            <para>
+            Nothing here says anything about accuracy. RTF measures speed. A model can be
+            the fastest on the machine and the least accurate on your audio, and this
+            project has no accuracy measurement to offer: that needs a reference
+            transcript, which it does not ship.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.Alias">
+            <summary>The alias this was measured on.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.Rtf">
+            <summary>
+            Best real-time factor over the timed passes: compute seconds divided by
+            audio seconds. Below 1.0 keeps up with live audio; for a file
+            transcription it is simply "how many times faster than real time".
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.LoadMs">
+            <summary>Wall time to load the model, in milliseconds.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.EncodeMs">
+            <summary>Encode time reported by the native layer, when it reports one.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.DecodeMs">
+            <summary>Decode time reported by the native layer, when it reports one.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.Passes">
+            <summary>Timed passes behind <see cref="P:TranscribeCppSharp.Performance.ModelBenchmark.Rtf"/>, after the discarded warm-up.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.AudioSeconds">
+            <summary>Length of the audio excerpt the passes ran over.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.AudioName">
+            <summary>Name of the file the excerpt came from, for traceability.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.Backend">
+            <summary>Compute backend requested for the run.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.Device">
+            <summary>Compute device the model actually resolved to.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.Threads">
+            <summary>Session thread count used, or 0 for the library default.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.MachineKey">
+            <summary>
+            Fingerprint of the machine and device this ran on.
+            </summary>
+            <remarks>
+            Used to hide results measured elsewhere rather than to invalidate them: a
+            row keeps its number, it just is not sorted against numbers from a
+            different machine. It is a fingerprint, not an identity — two identical
+            VMs collide, and swapping a GPU for an identical model does not change
+            it.
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.MeasuredAt">
+            <summary>When the measurement was taken.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.RtfText">
+            <summary>RTF formatted for the grid.</summary>
+            <remarks>
+            Invariant culture on purpose: this sits in a numeric column next to other
+            rows, where a comma decimal separator reads as a thousands separator.
+            <para>
+            Three decimals below 0.1 and two above. Two decimals everywhere would
+            print a fast model as "0.00" and round 0.085 to "0.09", which in a
+            column of closely ranked numbers is a difference you cannot see.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.LoadText">
+            <summary>Load time formatted for the grid.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.PhasesText">
+            <summary>
+            Encoder and decoder times the native layer reported, when it did.
+            </summary>
+            <remarks>
+            Rounded to a tenth of a millisecond. The native struct carries these as
+            <c>float</c>, so the raw value prints as something like
+            1832.3199462890625 — that trailing noise is float precision, not signal.
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.Performance.ModelBenchmark.ConditionsText">
+            <summary>
+            The conditions, as one line, for a tooltip and the detail pane.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Performance.ModelBenchmark.AboutSpeed">
+            <summary>
+            A short description of what this number is, for the grid header tooltip.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Performance.ModelBenchmark.AboutMachineKey">
+            <summary>
+            A short description of the fingerprint, for the detail pane.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Performance.ModelBenchmarkOrder">
+            <summary>
+            Orders a list of models for display, keeping the speed ranking honest.
+            </summary>
+            <remarks>
+            Separate from any view so the rule can be tested on its own. It decides which
+            numbers may legitimately be compared with which, and getting that wrong is
+            worse than having no ordering at all: a ranking that silently mixes machines,
+            or invents a position for a model that was never timed, is a claim nobody
+            checked.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkOrder.BySpeed``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String},System.Collections.Generic.IReadOnlyDictionary{System.String,TranscribeCppSharp.Performance.ModelBenchmark},System.String,System.Boolean)">
+            <summary>
+            Puts the rows measured on this machine first, ordered by real-time factor,
+            then everything else alphabetically.
+            </summary>
+            <typeparam name="T">The row type.</typeparam>
+            <param name="rows">Every visible row.</param>
+            <param name="alias">Reads a row's model alias.</param>
+            <param name="benchmarks">Timings by alias, possibly measured elsewhere.</param>
+            <param name="machineKey">The key a timing must carry to be comparable.</param>
+            <param name="fastestFirst">Ascending by real-time factor, or descending.</param>
+            <returns>The rows, ordered. The same instances, not copies.</returns>
+            <remarks>
+            A model that was never timed, or whose timing came from another machine,
+            gets no position among the measured ones. There is no honest way to rank
+            it: putting it first invents a speed, putting it last invents a slowness,
+            and interleaving it invents both. Those rows follow, in name order, so the
+            list never shows a dash where a number should be.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkOrder.ByKey``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1},System.Boolean)">
+            <summary>Orders rows by any key, ascending or descending.</summary>
+            <typeparam name="T">The row type.</typeparam>
+            <typeparam name="TKey">What the order is taken from.</typeparam>
+            <param name="rows">Every visible row.</param>
+            <param name="key">Reads the value to order by.</param>
+            <param name="comparer">How the values compare; string ordering is by code
+            unit rather than by locale, so the result does not change with the UI language.</param>
+            <param name="ascending">False to reverse it.</param>
+            <returns>The rows, ordered.</returns>
+            <remarks>
+            Descending is the exact mirror of ascending — the list is reversed after
+            ordering rather than ordered a second way — so the two can never disagree
+            about a tie.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkOrder.ByName``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String},System.Boolean)">
+            <summary>Orders rows alphabetically by alias.</summary>
+            <typeparam name="T">The row type.</typeparam>
+            <param name="rows">Every visible row.</param>
+            <param name="alias">Reads a row's model alias.</param>
+            <param name="ascending">False for Z to A. Optional, so callers written
+            before direction existed keep the order they had.</param>
+            <returns>The rows, ordered.</returns>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkOrder.BySize``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.String},System.Func{``0,System.Int64},System.Boolean)">
+            <summary>Orders rows by download size, smallest first.</summary>
+            <typeparam name="T">The row type.</typeparam>
+            <param name="rows">Every visible row.</param>
+            <param name="alias">Reads a row's model alias.</param>
+            <param name="sizeBytes">Reads a row's download size.</param>
+            <param name="ascending">False for largest first. Optional, so callers
+            written before direction existed keep the order they had.</param>
+            <returns>The rows, ordered, ties broken by name.</returns>
+        </member>
+        <member name="T:TranscribeCppSharp.Performance.ModelBenchmarkService">
+            <summary>
+            Times a transcription on this machine, so the model list can be sorted by
+            what is actually fast here rather than by what is supposed to be fast.
+            </summary>
+            <remarks>
+            Only for models already on disk. Nothing here downloads anything: a model
+            that has to be fetched first cannot be compared against one that is loaded,
+            and the 76 aliases come to 59 GiB.
+            <para>
+            The measurement is deliberately not a single pass. One run reports whatever
+            else the machine was doing at that instant, and docs/streaming-bench.md
+            records a case where contention turned 0.218 into 33 — a factor of 150. So
+            there is one discarded warm-up (the first pass pays for lazy allocation
+            inside the model) and <see cref="F:TranscribeCppSharp.Performance.ModelBenchmarkService.Passes"/> timed ones, and the best is kept:
+            contention only ever makes a run slower, so the fastest pass is the one
+            closest to what the machine can do.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.Performance.ModelBenchmarkService.DefaultExcerptSeconds">
+            <summary>Default length of the excerpt taken from the user's audio.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.Performance.ModelBenchmarkService.Passes">
+            <summary>Timed passes kept after the warm-up.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkService.Measure(TranscribeCppSharp.Models.ModelDescriptor,System.String,System.Int32,System.Nullable{TranscribeCppSharp.Interop.BackendRequest},TranscribeCppSharp.BackendDevice,System.Nullable{System.Int32},System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Times one model over an excerpt of <paramref name="audioPath"/>.
+            </summary>
+            <param name="descriptor">The model to measure; must already be cached.</param>
+            <param name="audioPath">Audio file to take the excerpt from.</param>
+            <param name="excerptSeconds">Length of the excerpt to time.</param>
+            <param name="backend">Compute backend to request.</param>
+            <param name="device">Device to request, or null to let it be resolved.</param>
+            <param name="threads">Session thread count, or null for the default.</param>
+            <param name="progress">Reports 0..1 across the passes.</param>
+            <param name="cancellationToken">Cancels between passes.</param>
+            <returns>The measurement and the conditions it was taken under.</returns>
+            <exception cref="T:System.InvalidOperationException">
+            The model is not on disk, or the audio holds no samples.
+            </exception>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkService.ReadExcerpt(System.String,System.Int32,System.Double@)">
+            <summary>
+            Reads at most <paramref name="seconds"/> of audio from the start of a file.
+            </summary>
+            <param name="audioPath">The file to read.</param>
+            <param name="seconds">How much to take.</param>
+            <param name="actualSeconds">Length actually read, in seconds.</param>
+            <returns>The samples, at 16 kHz mono.</returns>
+            <remarks>
+            The start of the file, not a slice chosen for being speech. Picking a
+            good excerpt by ear would make the number depend on the pick, and
+            silence at the head is exactly what a real recording often has.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Performance.ModelBenchmarkService.MachineKey">
+            <summary>
+            Builds the fingerprint a result is only valid under.
+            </summary>
+            <returns>A short string identifying the OS, core count and backend version.</returns>
+            <remarks>
+            Deliberately does not name the device. The device a run lands on depends on
+            the model and on the backend requested — a 16 GiB model may fall back to the
+            CPU where a small one stays on the GPU — so a per-run device in the key
+            would give two models measured on the same machine different keys and hide
+            both from the comparison. The device actually used is recorded on the result
+            and shown in its conditions line.
+            <para>
+            What this misses: it does not notice a part swapped for an identical one, and
+            two machines that agree on these four values are indistinguishable.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.TranscriptionTask">
+            <summary>Task for the transcription engine.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscriptionTask.Transcribe">
+            <summary>Transcribe audio in the source language.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscriptionTask.Translate">
+            <summary>Translate audio to English.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.RunParamsBuilder">
+            <summary>
+            Fluent builder for transcription run parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithTask(TranscribeCppSharp.TranscriptionTask)">
+            <summary>Task: transcribe or translate to English.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithTimestamps(TranscribeCppSharp.Interop.TimestampKind)">
+            <summary>Timestamp granularity.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithPnc(TranscribeCppSharp.Interop.PncMode)">
+            <summary>Punctuation and capitalization mode.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithItn(TranscribeCppSharp.Interop.ItnMode)">
+            <summary>Inverse text normalization mode.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithDiarize(TranscribeCppSharp.Interop.DiarizeMode)">
+            <summary>
+            Speaker-diarization toggle. Non-default values against a model without
+            <c>FeatureDiarization</c> emit a native WARN and keep default behavior.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithLanguage(System.String)">
+            <summary>
+            Source language of the audio as a BCP-47-ish short code (e.g. "fr",
+            "en"). Per the upstream API, the value must be a language code — there
+            is no "auto" sentinel: pass NULL (do not call this method) to
+            autodetect, only if the model supports language detection.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithTargetLanguage(System.String)">
+            <summary>Target language for translation.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithKeepSpecialTags(System.Boolean)">
+            <summary>Whether to keep special tags (e.g. &lt;|notimestamps|&gt;) in the output.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithSpecKDrafts(System.Int32)">
+            <summary>Number of speculative decoding drafts (0 to disable).</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithVocabulary(System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+            Custom terms the decoder should prefer, in priority order — names, jargon,
+            acronyms. Each term is trimmed; blank terms are dropped. The strings are
+            copied into unmanaged memory and released when this builder is disposed.
+            </summary>
+            <remarks>
+            A model that does not support the feature
+            (<see cref="F:TranscribeCppSharp.Interop.Feature.FeatureVocabulary"/>) ignores the list with a
+            native warning; it is not an error. The size the wrapper passes is the
+            number of terms it kept.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.WithWhisperExt(TranscribeCppSharp.WhisperExtBuilder)">
+            <summary>
+            Whisper-specific extension parameters (prompt, temperature, etc.).
+            Takes ownership of the builder — it will be disposed when this
+            RunParamsBuilder is disposed or when another ext is set.
+            Do not reuse the WhisperExtBuilder after passing it here.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.RunParamsBuilder.FreeVocabulary">
+            <summary>Releases the term strings and the array that points at them.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.SegmentResult">
+            <summary>A transcribed text segment with timestamps.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SegmentResult.#ctor(System.TimeSpan,System.TimeSpan,System.String,System.Int32)">
+            <summary>A transcribed text segment with timestamps.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Session">
+            <summary>
+            A transcription session bound to a model. Disposing this frees the native session.
+            Not thread-safe: use multiple sessions or synchronize access for concurrency.
+            </summary>
+            <remarks>
+            The session keeps its parent <see cref="T:TranscribeCppSharp.Model"/> alive for the session's lifetime.
+            Do not dispose the model before all sessions created from it.
+            </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.Session.lastRunStatus">
+            <summary>The status of the last native run, for the result it left behind.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.CreateStream">
+            <summary>Create a streaming session bound to this session handle.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.Run(System.ReadOnlySpan{System.Single},System.Action{TranscribeCppSharp.RunParamsBuilder},System.Threading.CancellationToken)">
+            <summary>
+            Transcribe a PCM buffer (16 kHz mono f32, samples in [-1, 1]).
+            Returns a Transcript whose FullText, RawText, DetectedLanguage, Segments,
+            Words, Tokens and SpeakerSegments are all already read out of the native
+            result. ReadSegments(), ReadWords() and ReadTokens() re-read those same
+            rows from the native session, so on the Transcript this method returns
+            they are redundant work: measured at 566 ns per row, 2.0 µs for the four
+            readers together on a 3-segment result, against seconds of inference.
+            Supports cancellation via <paramref name="ct"/>.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.FullText">
+            <summary>Get the full transcription text after a run.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.RawText">
+            <summary>
+            The model's decoded output before family post-processing (inline
+            diarization markers, tags, … still present). Empty before any run.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.SpeakerSegmentCount">
+            <summary>Number of speaker segments in the last result (0 when diarization did not run).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.SegmentCount">
+            <summary>Number of segments in the last result.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.WordCount">
+            <summary>Number of words in the last result.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.TokenCount">
+            <summary>Number of tokens in the last result.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.WasAborted">
+            <summary>Check if the session was aborted.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.WasTruncated">
+            <summary>Check if the output was truncated due to buffer limits.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Session.ReturnedTimestampKind">
+            <summary>Get the kind of timestamps returned by the session.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Session.SessionLimitsInfo">
+            <summary>Resource limits for this session.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.SessionLimitsInfo.#ctor(System.Int32,System.Int64,System.Int64)">
+            <summary>Resource limits for this session.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetLimits">
+            <summary>Get resource limits for this session.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ResetTimings">
+            <summary>Reset timing statistics for this session.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ReadSegments">
+            <summary>Read segments from the last run result.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ReadSpeakerSegments">
+            <summary>Read speaker segments from the last run result (empty when diarization did not run).</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ReadWords">
+            <summary>Read words from the last run result.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ReadTokens">
+            <summary>Read tokens from the last run result.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.PrintTimings">
+            <summary>Print timing information to the log.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.SetAbortCallback(System.Func{System.Boolean})">
+            <summary>
+            Set a cancellation callback. Return true from the callback to abort transcription.
+            The callback is invoked periodically during long-running operations.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.SetAbortToken(System.Threading.CancellationToken)">
+            <summary>
+            Install <paramref name="ct"/> as the abort source, without allocating a
+            closure for it.
+            </summary>
+            <remarks>
+            A cancellable <see cref="M:TranscribeCppSharp.Session.Run(System.ReadOnlySpan{System.Single},System.Action{TranscribeCppSharp.RunParamsBuilder},System.Threading.CancellationToken)"/> used to call
+            <c>SetAbortCallback(() =&gt; ct.IsCancellationRequested)</c>, which
+            allocated a closure over <paramref name="ct"/> on every call, and
+            <see cref="M:TranscribeCppSharp.Session.SetAbortCallback(System.Func{System.Boolean})"/> then allocated a second delegate to wrap
+            it — two allocations per cancellable run. Storing the token and having
+            the single interop delegate read it removes both. The delegate itself is
+            created once per session and reused, so a repeated cancellable loop
+            allocates nothing here.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.EnsureInteropCallback">
+            <summary>
+            The single interop delegate this session registers with the native side,
+            created on first use and then reused. It is rooted for the session's
+            lifetime because the native library holds the pointer to it.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.InvokeAbortCallback(System.IntPtr)">
+            <summary>
+            The body the native library calls to ask whether to abort. Reads the
+            current source on every call, so switching between a user callback and a
+            token does not need a new delegate.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ClearAbortCallback">
+            <summary>
+            Clear the cancellation callback.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetAbortCallback">
+            <summary>
+            Get the current abort callback, if any. Null when the abort source is a
+            <see cref="T:System.Threading.CancellationToken"/> installed by a cancellable run rather
+            than a user callback.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.RunBatchInternal(System.IntPtr,System.IntPtr,System.Int32,System.IntPtr)">
+            <summary>
+            Internal method for batch transcription with proper thread-safety.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetBatchResultCount">
+            <summary>
+            Get the number of batch results.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetBatchResultStatus(System.Int32)">
+            <summary>
+            Get the status of a batch result.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetBatchResultFullText(System.Int32)">
+            <summary>
+            Get the full text of a batch result.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetBatchResultDetectedLanguage(System.Int32)">
+            <summary>
+            Get the detected language of a batch result.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.GetBatchResultRawText(System.Int32)">
+            <summary>Get the per-utterance raw text of a batch result.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.IsResultBearing(TranscribeCppSharp.Interop.Status)">
+            <summary>
+            Whether a status leaves a readable result behind instead of meaning "no
+            result". These are the two stops the native API documents as
+            result-bearing; every other non-OK status is a failure.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.ReadItems``2(System.Int32,TranscribeCppSharp.Interop.AbiStruct,System.Action{System.IntPtr},System.Func{System.Int32,System.IntPtr,TranscribeCppSharp.Interop.Status},System.String,System.Func{``0,``1})">
+            <summary>
+            Fetch <paramref name="count"/> items of native type <typeparamref name="TNative"/>
+            into a fresh buffer (one init + fetch per index) and map each to the managed
+            result type <typeparamref name="TResult"/>. Shared by the session and batch
+            readers to avoid six copies of the same loop.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Session.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.SessionParamsBuilder">
+            <summary>
+            Fluent builder for session parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SessionParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.SessionParamsBuilder.WithThreads(System.Int32)">
+            <summary>Number of CPU threads. 0 = library default.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SessionParamsBuilder.WithKvType(TranscribeCppSharp.Interop.KvType)">
+            <summary>KV cache data type for flash attention.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SessionParamsBuilder.WithContextSize(System.Int32)">
+            <summary>Decoder context window cap (tokens). 0 = model max.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SessionParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.SortformerDiarizeExtBuilder">
+            <summary>
+            Fluent builder for the Sortformer diarization extension parameters.
+            </summary>
+            <remarks>
+            transcribe.cpp 0.4 moved Sortformer out of the ASR/streaming API: a
+            Sortformer model serves <see cref="F:TranscribeCppSharp.TranscribeRole.Diarize"/>, not
+            <see cref="F:TranscribeCppSharp.TranscribeRole.Asr"/>, and its preset is carried on
+            <c>transcribe_diarize_params::family</c> (the DIARIZE_RUN extension slot)
+            rather than on the stream. Pass this builder to
+            <see cref="M:TranscribeCppSharp.DiarizeParamsBuilder.WithSortformerExt(TranscribeCppSharp.SortformerDiarizeExtBuilder)"/>.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.SortformerDiarizeExtBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.SortformerDiarizeExtBuilder.WithPreset(TranscribeCppSharp.Interop.SortformerPreset)">
+            <summary>Latency/quality preset for Sortformer diarization.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SortformerDiarizeExtBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.SpeakerSegmentResult">
+            <summary>A "who spoke when" row, populated when diarization ran.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.SpeakerSegmentResult.#ctor(System.TimeSpan,System.TimeSpan,System.Int32,System.Single)">
+            <summary>A "who spoke when" row, populated when diarization ran.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.StackAllocHelper">
+            <summary>
+            Helper for safe native buffer allocation: uses the stack for small structs
+            (fast path) and falls back to unmanaged heap memory above a size threshold,
+            so oversized structs never crash the process with a stack overflow.
+            </summary>
+        </member>
+        <member name="F:TranscribeCppSharp.StackAllocHelper.MaxStackSize">
+            <summary>
+            Maximum safe size for stack allocation (1 KB). Beyond this, heap
+            allocation is used to avoid stack overflow.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StackAllocHelper.RunWithBuffer(System.Int32,System.Action{System.IntPtr})">
+            <summary>
+            Provide a native buffer of <paramref name="size"/> bytes (stack-allocated
+            when small, heap-allocated otherwise) and invoke <paramref name="use"/>
+            with a pointer to it. The buffer is valid only for the duration of the
+            callback. The heap variant is freed automatically.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StackAllocHelper.RunWithBuffer``1(System.Int32,System.Func{System.IntPtr,``0})">
+            <summary>
+            Same as <see cref="M:TranscribeCppSharp.StackAllocHelper.RunWithBuffer(System.Int32,System.Action{System.IntPtr})"/> but returns
+            the value produced by <paramref name="use"/>. The buffer is valid only for
+            the duration of the callback.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.StreamParamsBuilder">
+            <summary>
+            Fluent builder for streaming parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.WithCommitPolicy(TranscribeCppSharp.Interop.StreamCommitPolicy)">
+            <summary>When to commit results to the output.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.WithStablePrefixAgreement(System.UInt32)">
+            <summary>Number of stable prefix agreements before auto-commit.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.WithMoonshineExt(TranscribeCppSharp.MoonshineExtBuilder)">
+            <summary>Moonshine streaming extension parameters.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.WithParakeetStreamExt(TranscribeCppSharp.ParakeetStreamExtBuilder)">
+            <summary>Parakeet streaming extension parameters.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.WithParakeetBufferedStreamExt(TranscribeCppSharp.ParakeetBufferedStreamExtBuilder)">
+            <summary>Parakeet buffered streaming extension parameters.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.WithVoxtralExt(TranscribeCppSharp.VoxtralExtBuilder)">
+            <summary>Voxtral realtime streaming extension parameters.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.StreamSession">
+            <summary>
+            Real-time streaming transcription session.
+            Feed PCM audio chunks incrementally and read partial/final results.
+            </summary>
+            <remarks>
+            <b>Lifecycle:</b> <c>Begin()</c> -> <c>Feed()*</c> -> <c>Complete()</c>.
+            <br/>
+            This class is a view over a <see cref="T:TranscribeCppSharp.Session"/> and shares its state. 
+            It is <b>not thread-safe</b> for concurrent access, but the underlying 
+            handle management is safe.
+            </remarks>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamSession.Begin(System.Action{TranscribeCppSharp.RunParamsBuilder},System.Action{TranscribeCppSharp.StreamParamsBuilder})">
+            <summary>
+            Start a new streaming transcription.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamSession.Feed(System.ReadOnlySpan{System.Single})">
+            <summary>
+            Feed a chunk of PCM audio (16 kHz mono f32).
+            Returns an update indicating whether results changed.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamSession.Complete">
+            <summary>
+            Complete the stream. No more audio can be fed after this.
+            This should be called before <see cref="M:TranscribeCppSharp.StreamSession.Dispose"/> to ensure all 
+            buffered audio is processed and final results are generated.
+            </summary>
+            <returns>Result indicating if the final transcription changed or is final.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if called after Dispose.</exception>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamSession.Reset">
+            <summary>
+            Reset the stream to start a new transcription (keeps the session).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamSession.GetCurrentText">
+            <summary>Read the current streaming text (full, committed, tentative).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.StreamSession.State">
+            <summary>Current state of the streaming session.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.StreamSession.CommittedSegmentCount">
+            <summary>Number of committed segments.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.StreamSession.CommittedWordCount">
+            <summary>Number of committed words.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.StreamSession.CommittedTokenCount">
+            <summary>Number of committed tokens.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.StreamSession.LastStatus">
+            <summary>Last status of the streaming session.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.StreamSession.Revision">
+            <summary>Stream revision (incremented on each commit).</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamSession.Dispose">
+            <summary>
+            Disposes the streaming view. 
+            If streaming was started via <see cref="M:TranscribeCppSharp.StreamSession.Begin(System.Action{TranscribeCppSharp.RunParamsBuilder},System.Action{TranscribeCppSharp.StreamParamsBuilder})"/>, resets the native
+            stream state. It is recommended to call <see cref="M:TranscribeCppSharp.StreamSession.Complete"/> before
+            Disposing to get the last transcription results.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.StreamTextResult">
+            <summary>
+            Current text state of a streaming session.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamTextResult.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Current text state of a streaming session.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.StreamUpdateResult">
+            <summary>
+            Result of a StreamFeed or StreamComplete call.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.StreamUpdateResult.#ctor(System.Boolean,System.Boolean,System.Int32,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Boolean,System.Boolean)">
+            <summary>
+            Result of a StreamFeed or StreamComplete call.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.TimingsResult">
+            <summary>Performance timings for a transcription run.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.TimingsResult.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>Performance timings for a transcription run.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.TokenResult">
+            <summary>A transcription token with timing and probability.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.TokenResult.#ctor(System.Int32,System.Single,System.TimeSpan,System.TimeSpan,System.String)">
+            <summary>A transcription token with timing and probability.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.TranscribeException">
+            <summary>
+            Exception thrown when a transcribe.cpp native call returns an error status.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.TranscribeException.StatusCode">
+            <summary>
+            The native status code returned by the library.
+            Common values include:
+            <list type="bullet">
+            <item><description><see cref="F:TranscribeCppSharp.Interop.Status.Ok"/> (0): Success.</description></item>
+            <item><description><see cref="F:TranscribeCppSharp.Interop.Status.ErrInvalidArg"/> (1): Invalid argument provided.</description></item>
+            <item><description><see cref="F:TranscribeCppSharp.Interop.Status.ErrGguf"/> (4): Failed to load or parse the model file.</description></item>
+            <item><description><see cref="F:TranscribeCppSharp.Interop.Status.ErrBackend"/> (8): Hardware acceleration backend failure.</description></item>
+            <item><description><see cref="F:TranscribeCppSharp.Interop.Status.ErrAborted"/> (13): Operation was cancelled via CancellationToken.</description></item>
+            </list>
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.TranscribeException.ErrorCode">
+            <summary>The raw integer value of the status code.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.TranscribeException.FailedMethod">
+            <summary>The native method that failed, if known.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.TranscribeException.#ctor(TranscribeCppSharp.Interop.Status,System.String)">
+            <summary>
+            Create an exception for a failed native call.
+            </summary>
+            <param name="status">The native status code returned by the library.</param>
+            <param name="failedMethod">The native method name that failed, if known.</param>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscribeException.SStatusMessages">
+            <summary>
+            Best-effort native status description, memoized per status code so the
+            exception path hits P/Invoke at most once per code — and never crashes
+            (e.g. when the native library cannot be loaded).
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.TranscribeRole">
+             <summary>
+             A kind of work a loaded model does. A model serves one or more roles, fixed
+             at load and never changed for the model's lifetime.
+             </summary>
+             <remarks>
+             Introduced by upstream transcribe.cpp 0.4. A model's roles come from
+             <see cref="P:TranscribeCppSharp.Model.Roles"/> (<c>transcribe_model_roles</c>). Entry points that
+             need a role the model lacks return <see cref="F:TranscribeCppSharp.Interop.Status.ErrUnsupportedRole"/>,
+             which surfaces as a <see cref="T:TranscribeCppSharp.TranscribeException"/>.
+            
+             In particular, models whose product is speaker turns (Sortformer) serve
+             <see cref="F:TranscribeCppSharp.TranscribeRole.Diarize"/>, not <see cref="F:TranscribeCppSharp.TranscribeRole.Asr"/>: transcribe.cpp 0.4 refuses
+             <see cref="M:TranscribeCppSharp.Model.CreateSession(System.Action{TranscribeCppSharp.SessionParamsBuilder})"/> on them, and
+             <see cref="M:TranscribeCppSharp.Model.GetCapabilities"/> throws instead of returning a zeroed
+             struct. Use <see cref="M:TranscribeCppSharp.Model.CreateDiarizeSession(System.Action{TranscribeCppSharp.DiarizeSessionParamsBuilder})"/> instead.
+             </remarks>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscribeRole.None">
+            <summary>No role (an unloaded or unknown model).</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscribeRole.Asr">
+            <summary>Speech-to-text: <see cref="M:TranscribeCppSharp.Model.CreateSession(System.Action{TranscribeCppSharp.SessionParamsBuilder})"/>.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscribeRole.Diarize">
+            <summary>Speaker diarization: <see cref="M:TranscribeCppSharp.Model.CreateDiarizeSession(System.Action{TranscribeCppSharp.DiarizeSessionParamsBuilder})"/>.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscribeRole.Langid">
+            <summary>Language identification: <see cref="M:TranscribeCppSharp.Model.CreateLangIdSession(System.Action{TranscribeCppSharp.LangIdSessionParamsBuilder})"/>.</summary>
+        </member>
+        <member name="F:TranscribeCppSharp.TranscribeRole.Vad">
+            <summary>Voice activity detection: <see cref="M:TranscribeCppSharp.Model.CreateVadSession(System.Action{TranscribeCppSharp.VadSessionParamsBuilder})"/>.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Transcript">
+            <summary>
+            Complete transcription result.
+            All strings are managed copies — safe to keep after the session is disposed.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.FullText">
+            <summary>Complete transcribed text of the run. Corresponds to native transcribe_full_text(session).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.RawText">
+            <summary>Raw decoded output before family post-processing. Corresponds to native transcribe_raw_text(session).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.DetectedLanguage">
+            <summary>Detected language code (e.g. "en"). Corresponds to native transcribe_detected_language(session).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.WasAborted">
+            <summary>True when the run was cancelled mid-flight. Corresponds to native transcribe_was_aborted(session).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.WasTruncated">
+            <summary>True when the run was cut short by its token limit. Corresponds to native transcribe_was_truncated(session).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.StatusCode">
+            <summary>
+            The status the native run returned. <see cref="F:TranscribeCppSharp.Interop.Status.Ok"/> for a complete
+            run; <see cref="F:TranscribeCppSharp.Interop.Status.ErrOutputTruncated"/> or
+            <see cref="F:TranscribeCppSharp.Interop.Status.ErrOutputRepetition"/> for a result-bearing stop, where
+            the transcript above is the partial one and <see cref="P:TranscribeCppSharp.Transcript.WasTruncated"/> is
+            true. Any other status is thrown instead of returned.
+            </summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.Segments">
+            <summary>Segments, read via native transcribe_n_segments / transcribe_get_segment.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.Words">
+            <summary>Words, read via native transcribe_n_words / transcribe_get_word.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.Tokens">
+            <summary>Tokens, read via native transcribe_n_tokens / transcribe_get_token.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.SpeakerSegments">
+            <summary>Speaker segments, read via native transcribe_n_speaker_segments / transcribe_get_speaker_segment.</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.Transcript.Timing">
+            <summary>Timings of the run, via native transcribe_get_timings. Null when the run produced no timings.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.Transcription">
+            <summary>
+            Convenience API: load model + transcribe in one call.
+            For repeated transcription, use Model.CreateSession() instead.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.Transcription.Run(System.String,System.ReadOnlySpan{System.Single},System.Action{TranscribeCppSharp.ModelLoadParamsBuilder},System.Action{TranscribeCppSharp.SessionParamsBuilder},System.Action{TranscribeCppSharp.RunParamsBuilder})">
+            <summary>
+            Load a model, transcribe a PCM buffer, and return the result.
+            The model is freed after transcription completes.
+            </summary>
+        </member>
+        <member name="T:TranscribeCppSharp.VadParamsBuilder">
+            <summary>
+            Fluent builder for VAD run parameters (<c>transcribe_vad_params</c>).
+            Each setter overrides the native default, which is stated on the method.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.WithThreshold(System.Double)">
+            <summary>Probability at or above which audio is classified as speech. Default 0.5; range 0..1.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.WithNegThreshold(System.Double)">
+            <summary>
+            Probability below which ongoing speech is treated as silence. Default -1,
+            which uses <c>max(threshold - 0.15, 0.01)</c>; 0 means "use threshold".
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.WithMinSpeechMs(System.Int32)">
+            <summary>Discard speech segments this short or shorter (ms). Default 250.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.WithMinSilenceMs(System.Int32)">
+            <summary>How long to wait after silence starts before ending speech (ms). Default 100.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.WithSpeechPadMs(System.Int32)">
+            <summary>Extra audio kept before and after speech (ms). Default 30.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.WithMaxSpeechMs(System.Int32)">
+            <summary>Maximum speech segment length (ms); longer segments are split. Default 0 (no limit).</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.VadSession">
+            <summary>
+            Voice activity detection, for a model that serves
+            <see cref="F:TranscribeCppSharp.TranscribeRole.Vad"/> (e.g. Silero VAD v6.2).
+            </summary>
+            <remarks>
+            Introduced by upstream transcribe.cpp 0.4. Audio must be 16 kHz mono f32.
+            Not thread-safe. The session keeps its parent <see cref="T:TranscribeCppSharp.Model"/> alive.
+            </remarks>
+        </member>
+        <member name="T:TranscribeCppSharp.VadSession.VadInfo">
+            <summary>Facts about a loaded voice-activity-detection model.</summary>
+            <param name="SampleRate">Expected input sample rate (Hz).</param>
+            <param name="FrameSamples">Frame size the model scores, in samples.</param>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.VadInfo.#ctor(System.Int32,System.Int32)">
+            <summary>Facts about a loaded voice-activity-detection model.</summary>
+            <param name="SampleRate">Expected input sample rate (Hz).</param>
+            <param name="FrameSamples">Frame size the model scores, in samples.</param>
+        </member>
+        <member name="P:TranscribeCppSharp.VadSession.VadInfo.SampleRate">
+            <summary>Expected input sample rate (Hz).</summary>
+        </member>
+        <member name="P:TranscribeCppSharp.VadSession.VadInfo.FrameSamples">
+            <summary>Frame size the model scores, in samples.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.VadSession.VadSegmentResult">
+            <summary>A speech segment as sample indices <c>[StartSample, EndSample)</c>.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.VadSegmentResult.#ctor(System.Int64,System.Int64)">
+            <summary>A speech segment as sample indices <c>[StartSample, EndSample)</c>.</summary>
+        </member>
+        <member name="T:TranscribeCppSharp.VadSession.VadResult">
+            <summary>
+            The result of a VAD call: the speech probability per frame, the index of
+            the first returned frame, and (after an offline run) the speech segments.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.VadResult.#ctor(System.Collections.Generic.IReadOnlyList{System.Single},System.Int64,System.Collections.Generic.IReadOnlyList{TranscribeCppSharp.VadSession.VadSegmentResult})">
+            <summary>
+            The result of a VAD call: the speech probability per frame, the index of
+            the first returned frame, and (after an offline run) the speech segments.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.Run(System.ReadOnlySpan{System.Single},System.Action{TranscribeCppSharp.VadParamsBuilder},System.Threading.CancellationToken)">
+            <summary>
+            Score a whole PCM buffer (16 kHz mono f32) and return the per-frame
+            probabilities and the speech segments. Supports cancellation via
+            <paramref name="ct"/>.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.Feed(System.ReadOnlySpan{System.Single})">
+            <summary>
+            Score one streaming block. Probabilities become readable via
+            <see cref="M:TranscribeCppSharp.VadSession.ReadResult"/>; segments are not produced by a feed.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.Flush">
+            <summary>Flush the streaming buffer; the remaining probabilities become readable.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.Reset">
+            <summary>Reset the streaming state.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.ReadResult">
+            <summary>Read the result of the last run, feed or flush.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.GetTimings">
+            <summary>Timing statistics for the last run, or null when unavailable.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSession.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.VadSessionParamsBuilder">
+            <summary>
+            Fluent builder for a VAD session's parameters
+            (<c>transcribe_vad_session_params</c>).
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSessionParamsBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSessionParamsBuilder.WithThreads(System.Int32)">
+            <summary>Number of CPU threads. 0 = library default.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VadSessionParamsBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.VoxtralExtBuilder">
+            <summary>
+            Fluent builder for Voxtral realtime streaming extension parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VoxtralExtBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.VoxtralExtBuilder.WithNumDelayTokens(System.Int32)">
+            <summary>Number of delay tokens.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VoxtralExtBuilder.WithMinDecodeIntervalMs(System.Int32)">
+            <summary>Minimum decode interval in milliseconds.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.VoxtralExtBuilder.Initialized">
+            <summary>
+            What the native <c>voxtral_realtime_stream_ext_init</c> sets, read from the
+            initialized struct rather than written here.
+            </summary>
+            <remarks>
+            Both are the sentinel -1. For the delay tokens that means the model default,
+            6 tokens; for the decode interval it means the family default cadence.
+            Leaving the extension off asks for the same.
+            </remarks>
+        </member>
+        <member name="P:TranscribeCppSharp.VoxtralExtBuilder.DefaultNumDelayTokens">
+            <inheritdoc cref="M:TranscribeCppSharp.VoxtralExtBuilder.Initialized"/>
+        </member>
+        <member name="P:TranscribeCppSharp.VoxtralExtBuilder.DefaultMinDecodeIntervalMs">
+            <inheritdoc cref="M:TranscribeCppSharp.VoxtralExtBuilder.Initialized"/>
+        </member>
+        <member name="M:TranscribeCppSharp.VoxtralExtBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.WhisperExtBuilder">
+            <summary>
+            Fluent builder for Whisper-specific extension parameters.
+            </summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithInitialPrompt(System.String)">
+            <summary>Initial prompt to guide transcription (e.g. "Bonjour, comment allez-vous?").</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithPromptTokens(System.Int32[])">
+            <summary>Pre-tokenized prompt tokens.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithPromptCondition(TranscribeCppSharp.Interop.WhisperPromptCondition)">
+            <summary>How to condition on the prompt.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithConditionOnPrevTokens(System.Boolean)">
+            <summary>Whether to condition on previous tokens for context.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithMaxPrevContextTokens(System.Int32)">
+            <summary>Maximum number of previous context tokens to use.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithTemperature(System.Single)">
+            <summary>Sampling temperature (0.0 = greedy, higher = more random).</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithTemperatureInc(System.Single)">
+            <summary>Temperature increment for fallback decoding.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithCompressionRatioThold(System.Single)">
+            <summary>Compression ratio threshold for fallback detection.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithLogprobThold(System.Single)">
+            <summary>Log probability threshold for fallback detection.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithNoSpeechThold(System.Single)">
+            <summary>No-speech probability threshold.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithSeed(System.UInt32)">
+            <summary>Random seed for reproducibility.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.WithMaxInitialTimestamp(System.Single)">
+            <summary>Maximum initial timestamp in seconds.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WhisperExtBuilder.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TranscribeCppSharp.WordResult">
+            <summary>A transcribed word with timestamps.</summary>
+        </member>
+        <member name="M:TranscribeCppSharp.WordResult.#ctor(System.TimeSpan,System.TimeSpan,System.String)">
+            <summary>A transcribed word with timestamps.</summary>
+        </member>
+    </members>
+</doc>

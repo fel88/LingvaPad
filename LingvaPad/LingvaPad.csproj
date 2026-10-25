@@ -80,8 +80,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ParakeetLib\ParakeetLib.csproj" />
-    <ProjectReference Include="..\TranscribeCppSharp\TranscribeCppSharp.csproj" />
+    <Reference Include="ParakeetLib">
+      <HintPath>..\dlls\ParakeetLib.dll</HintPath>
+    </Reference>
+    <Reference Include="TranscribeCppSharp">
+      <HintPath>..\dlls\TranscribeCppSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="TranscribeCppSharp.Interop">
+      <HintPath>..\dlls\TranscribeCppSharp.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Transcriber.Common">
+      <HintPath>..\dlls\Transcriber.Common.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
