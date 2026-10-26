@@ -30,11 +30,14 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Trainer1));
             tableLayoutPanel1 = new TableLayoutPanel();
+            textBox3 = new TextBox();
             panel1 = new Panel();
+            button6 = new Button();
             checkBox1 = new CheckBox();
+            button5 = new Button();
+            button4 = new Button();
             textBox2 = new TextBox();
             button2 = new Button();
-            textBox1 = new TextBox();
             toolStrip1 = new ToolStrip();
             toolStripButton1 = new ToolStripButton();
             toolStripButton2 = new ToolStripButton();
@@ -50,28 +53,55 @@
             // 
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(panel1, 0, 1);
-            tableLayoutPanel1.Controls.Add(textBox1, 0, 0);
+            tableLayoutPanel1.Controls.Add(textBox3, 0, 0);
+            tableLayoutPanel1.Controls.Add(panel1, 0, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 25);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.RowCount = 3;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Size = new Size(796, 285);
             tableLayoutPanel1.TabIndex = 0;
             // 
+            // textBox3
+            // 
+            textBox3.BackColor = Color.White;
+            textBox3.Dock = DockStyle.Fill;
+            textBox3.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            textBox3.Location = new Point(3, 3);
+            textBox3.Multiline = true;
+            textBox3.Name = "textBox3";
+            textBox3.ReadOnly = true;
+            textBox3.Size = new Size(790, 86);
+            textBox3.TabIndex = 5;
+            textBox3.TextAlign = HorizontalAlignment.Center;
+            // 
             // panel1
             // 
+            panel1.Controls.Add(button6);
             panel1.Controls.Add(checkBox1);
+            panel1.Controls.Add(button5);
+            panel1.Controls.Add(button4);
             panel1.Controls.Add(textBox2);
             panel1.Controls.Add(button2);
-            panel1.Location = new Point(3, 188);
+            panel1.Location = new Point(3, 187);
             panel1.Name = "panel1";
             panel1.Size = new Size(790, 94);
             panel1.TabIndex = 3;
+            // 
+            // button6
+            // 
+            button6.Image = Properties.Resources.speaker;
+            button6.ImageAlign = ContentAlignment.MiddleLeft;
+            button6.Location = new Point(611, 42);
+            button6.Name = "button6";
+            button6.Size = new Size(82, 44);
+            button6.TabIndex = 13;
+            button6.Text = "Play";
+            button6.UseVisualStyleBackColor = true;
+            button6.Click += button6_Click;
             // 
             // checkBox1
             // 
@@ -83,6 +113,31 @@
             checkBox1.Text = "show pair";
             checkBox1.UseVisualStyleBackColor = true;
             checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            // 
+            // button5
+            // 
+            button5.Image = Properties.Resources.control_stop_square;
+            button5.ImageAlign = ContentAlignment.MiddleLeft;
+            button5.Location = new Point(699, 42);
+            button5.Name = "button5";
+            button5.Size = new Size(82, 44);
+            button5.TabIndex = 12;
+            button5.Text = "Stop";
+            button5.UseVisualStyleBackColor = true;
+            button5.Visible = false;
+            button5.Click += button5_Click;
+            // 
+            // button4
+            // 
+            button4.Image = Properties.Resources.microphone;
+            button4.ImageAlign = ContentAlignment.MiddleLeft;
+            button4.Location = new Point(699, 42);
+            button4.Name = "button4";
+            button4.Size = new Size(82, 44);
+            button4.TabIndex = 11;
+            button4.Text = "Record";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // textBox2
             // 
@@ -103,19 +158,6 @@
             button2.Text = "Next";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
-            // 
-            // textBox1
-            // 
-            textBox1.BackColor = Color.White;
-            textBox1.Dock = DockStyle.Fill;
-            textBox1.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            textBox1.Location = new Point(3, 3);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.ReadOnly = true;
-            textBox1.Size = new Size(790, 179);
-            textBox1.TabIndex = 4;
-            textBox1.TextAlign = HorizontalAlignment.Center;
             // 
             // toolStrip1
             // 
@@ -188,11 +230,14 @@
         private ToolStripButton toolStripButton1;
         private Panel panel1;
         private Button button2;
-        private TextBox textBox1;
         private ToolStripButton toolStripButton2;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private CheckBox checkBox1;
         private TextBox textBox2;
+        private Button button6;
+        private Button button5;
+        private Button button4;
+        private TextBox textBox3;
     }
 }

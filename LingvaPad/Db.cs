@@ -1,4 +1,5 @@
 ﻿
+using Mosaik.Core;
 using System.Diagnostics;
 using System.Windows.Media.Animation;
 using System.Xml.Linq;
@@ -53,7 +54,23 @@ namespace LingvaPad
                 TranslationsLookUp[item].AddRange(tt.Select(z => z.Source).ToList());
             }
         }
-        
+
+        internal async Task<Sentence> AddOrGetSentence(string v)
+        {
+            var culture = await SentencesEditor.DetectCulture(v) switch
+            {
+                Language.Russian=>"ru",
+                Language.English=>"en",
+            };
+
+            var fr = Sentences.FirstOrDefault(z => string.Compare(v, z.Text, true) == 0);
+            if (fr != null)
+                return fr;
+
+            var ret = new Sentence() { Text = v, Culture = culture };
+            Sentences.Add(ret);
+            return ret;
+        }
 
         internal XElement ToXml()
         {

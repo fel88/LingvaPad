@@ -72,7 +72,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoDialog" Version="1.0.0.9" />
+    <PackageReference Include="AutoDialog" Version="1.0.1.1" />
     <PackageReference Include="Catalyst" Version="26.10.6514" />
     <PackageReference Include="Catalyst.Models.English" Version="26.9.5316" />
     <PackageReference Include="Dagre.NET" Version="1.0.0.6" />

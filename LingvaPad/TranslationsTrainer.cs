@@ -176,6 +176,15 @@ namespace LingvaPad
                 label1.ForeColor = Color.White;
                 label1.BackColor = Color.Red;
             }
+
+            var html = GetDiffHtml(ret);
+            wb.DocumentText = html;
+
+
+        }
+
+        public static string GetDiffHtml(TextDifferentiator.TextDiffBlock[] ret)
+        {
             StringBuilder html = new StringBuilder();
             html.Append("<span style='text-align: center; font-size:24px; color:white;'>");
 
@@ -194,9 +203,7 @@ namespace LingvaPad
             }
 
             html.Append("</span>");
-            wb.DocumentText = html.ToString();
-
-
+            return html.ToString();
         }
 
         private bool IsAnswerCorrect(TextDifferentiator.TextDiffBlock[] ret)
@@ -345,7 +352,7 @@ namespace LingvaPad
 
             rec.StartRecording();
         }
-        static async Task<string> DecodeRawWav(byte[] data, WaveFormat format)
+        public static async Task<string> DecodeRawWav(byte[] data, WaveFormat format)
         {
             MemoryStream ms = new MemoryStream();
             using (WaveFileWriter writer = new WaveFileWriter(ms, format))

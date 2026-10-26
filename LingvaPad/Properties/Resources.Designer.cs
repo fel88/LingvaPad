@@ -143,6 +143,16 @@ namespace LingvaPad.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap cross1 {
+            get {
+                object obj = ResourceManager.GetObject("cross1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap disk__arrow {
             get {
                 object obj = ResourceManager.GetObject("disk--arrow", resourceCulture);

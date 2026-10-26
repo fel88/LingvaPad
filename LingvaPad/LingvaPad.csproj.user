@@ -16,6 +16,9 @@
     <Compile Update="mdi.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="ParsePairsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="TranslationsTrainer.cs">
       <SubType>Form</SubType>
     </Compile>

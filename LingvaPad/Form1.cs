@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Mosaik.Core;
+using System.Net.Http.Headers;
 
 namespace LingvaPad
 {
@@ -236,10 +237,22 @@ namespace LingvaPad
             UpdateList2();
         }
 
-        private void fromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void fromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var d = AutoDialog.DialogHelpers.StartDialog();
+
+            if (!d.ShowDialog())
+                return;
+
             var text = Clipboard.GetText();
-            //Db.Instance.Sentences.FirstOrDefault()
+            var lines = text.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries).ToArray();
+            foreach (var item in lines)
+            {
+                var spl = item.Split('|').ToArray();
+                var s1 = await Db.Instance.AddOrGetSentence(spl[0]);
+                var s2 = await Db.Instance.AddOrGetSentence(spl[1]);
+                Db.Instance.Pairs.Add(new SentencePair() { Source = s1, Target = s2 });
+            }
         }
     }
 }

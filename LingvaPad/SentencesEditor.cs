@@ -226,14 +226,14 @@ namespace LingvaPad
         }
 
 
-        async Task<Language> DetectCulture(string text)
+        public static async Task<Language> DetectCulture(string text)
         {
             Catalyst.Models.English.Register();
 
             Storage.Current = new DiskStorage("catalyst-models");
 
 
-            var nlp = await Pipeline.ForAsync(Language.English);
+            var nlp = Pipeline.For(Language.English);
 
             Storage.Current = new DiskStorage("catalyst-models");
             var langDetector = await LanguageDetector.FromStoreAsync(Language.Any, Mosaik.Core.Version.Latest, "tag1");
